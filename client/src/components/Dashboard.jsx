@@ -1,0 +1,28 @@
+import { useState } from "react";
+import Sidebar from "./Sidebar";
+import CurrentEntryPanel from "./CurrentEntryPanel";
+import OnThisDayPanel from "./OnThisDayPanel";
+import StatsPanel from "./StatsPanel";
+import MoodPanel from "./MoodPanel";
+import QuotePanel from "./QuotePanel";
+import Calendar from "./Calendar";
+
+export default function Dashboard() {
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
+
+    return (
+        <div className="dashboard-container">
+            <Sidebar />
+            <div className="left-main-content">
+                <CurrentEntryPanel selectedDate={selectedDate} />
+                <OnThisDayPanel selectedDate={selectedDate} />
+                <StatsPanel />
+            </div>
+            <div className="right-main-content">
+                <QuotePanel />
+                <MoodPanel />
+                <Calendar selectedDate={selectedDate} onDateChange={setSelectedDate} />
+            </div>
+        </div>
+    );
+}
