@@ -4,7 +4,11 @@ from django.utils import timezone
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tags')
+    name = models.CharField(max_length=50)
+
+    class Meta:
+        unique_together = ('user', 'name')
 
     def __str__(self):
         return self.name
@@ -20,6 +24,7 @@ class JournalEntry(models.Model):
     is_private = models.BooleanField(default=True)
     tags = models.ManyToManyField(Tag, blank=True, related_name='entries')
     image = models.ImageField(upload_to='entry_photos/', null=True, blank=True)
+    mood = models.CharField(max_length=50, blank=True)
 
     class Meta:
         ordering = ['-date', '-created_at']
