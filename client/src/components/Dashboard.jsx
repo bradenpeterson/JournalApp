@@ -5,7 +5,7 @@ import OnThisDayPanel from "./OnThisDayPanel";
 import StatsPanel from "./StatsPanel";
 import MoodPanel from "./MoodPanel";
 import QuotePanel from "./QuotePanel";
-import Calendar from "./Calendar";
+import Calendar from "./CalendarPanel";
 
 export default function Dashboard() {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
