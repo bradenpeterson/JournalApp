@@ -1,4 +1,4 @@
-import { request } from './request'
+import { request } from './Request'
 
 export const listTags = (page = 1) => request('/api/tags/', { params: { page } })
 
