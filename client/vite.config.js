@@ -11,5 +11,5 @@ export default defineConfig({
     },
     outDir: "../_server/core/static/core"
   },
-  base: "/static"
+  base: process.env.NODE_ENV === 'production' ? "/static" : "/"
 })

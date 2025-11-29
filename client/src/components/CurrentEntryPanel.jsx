@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getEntriesByDate } from "../../api/entries";
+import { getEntriesByDate } from "../api/entries";
 
 export default function CurrentEntryPanel({ selectedDate }) {
   const [entry, setEntry] = useState(null);
