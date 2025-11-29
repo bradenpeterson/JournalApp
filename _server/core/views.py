@@ -34,7 +34,18 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
     ordering_fields = ['date', 'created_at', 'updated_at']
 
     def get_queryset(self):
-        return JournalEntry.objects.filter(user=self.request.user)
+        qs = JournalEntry.objects.filter(user=self.request.user)
+        
+        # Filter by month-day (e.g., ?month_day=11-29 for Nov 29)
+        month_day = self.request.query_params.get('month_day')
+        if month_day:
+            try:
+                month, day = map(int, month_day.split('-'))
+                qs = qs.filter(date__month=month, date__day=day).order_by('-date')
+            except (ValueError, AttributeError):
+                pass
+        
+        return qs
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

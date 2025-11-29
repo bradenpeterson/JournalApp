@@ -10,6 +10,15 @@ export const listEntries = ({ page = 1, search = '', date } = {}) => {
 export const getEntriesByDate = (date) =>
   listEntries({ date }).then(res => res.results || res)
 
+export const getEntriesByMonthDay = (monthDay) => {
+  // monthDay format: "11-29" (month-day)
+  return request('/api/entries/', { params: { month_day: monthDay } })
+    .then(res => {
+      const entries = res.results || res
+      return Array.isArray(entries) ? entries.slice(0, 5) : []
+    })
+}
+
 export const getEntry = (id) => request(`/api/entries/${id}/`)
 
 export const createEntry = (data) => request('/api/entries/', { method: 'POST', body: data })
