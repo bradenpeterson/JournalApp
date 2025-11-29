@@ -1,48 +1,22 @@
-async function request(path, { method = 'GET', body, params, headers = {} } = {}) {
-  let url = path.startsWith('/') ? path : `${path}`
-  if (params) {
-    const search = new URLSearchParams(params)
-    url += `?${search.toString()}`
-  }
+import { request } from './request'
 
-  const opts = {
-    method,
-    credentials: 'same-origin',
-    headers: { ...headers },
-  }
-
-  if (body && !(body instanceof FormData)) {
-    opts.headers['Content-Type'] = 'application/json'
-    opts.body = JSON.stringify(body)
-  } else if (body instanceof FormData) {
-    opts.body = body
-  }
-
-  const res = await fetch(url, opts)
-  const contentType = res.headers.get('content-type') || ''
-  
-  if (!res.ok) {
-    const errData = contentType.includes('application/json') ? await res.json() : null
-    throw { status: res.status, data: errData }
-  }
-
-  if (contentType.includes('application/json')) {
-    return res.json()
-  }
-  return res
-}
-
-export const listEntries = (page = 1, search = '') => {
+export const listEntries = ({ page = 1, search = '', date } = {}) => {
   const params = { page }
   if (search) params.search = search
+  if (date) params.date = date
   return request('/api/entries/', { params })
 }
+
+export const getEntriesByDate = (date) =>
+  listEntries({ date }).then(res => res.results || res)
 
 export const getEntry = (id) => request(`/api/entries/${id}/`)
 
 export const createEntry = (data) => request('/api/entries/', { method: 'POST', body: data })
 
 export const updateEntry = (id, data) => request(`/api/entries/${id}/`, { method: 'PUT', body: data })
+
+export const patchEntry = (id, data) => request(`/api/entries/${id}/`, { method: 'PATCH', body: data })
 
 export const deleteEntry = (id) => request(`/api/entries/${id}/`, { method: 'DELETE' })
 
