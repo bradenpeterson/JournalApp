@@ -34,3 +34,5 @@ export const uploadEntryImage = (id, file) => {
   formData.append('image', file)
   return request(`/api/entries/${id}/`, { method: 'PATCH', body: formData })
 }
+
+export const getStats = () => request('/api/entries/stats/')
