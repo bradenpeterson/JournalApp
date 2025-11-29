@@ -8,7 +8,11 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class JournalEntrySerializer(serializers.ModelSerializer):
-    tags = TagSerializer(many=True, read_only=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Tag.objects.all(),
+        required=False
+    )
 
     class Meta:
         model = JournalEntry
@@ -17,3 +21,9 @@ class JournalEntrySerializer(serializers.ModelSerializer):
             'is_private', 'tags', 'image', 'mood'
         ]
         read_only_fields = ['user', 'created_at', 'updated_at']
+
+    def to_representation(self, instance):
+        """Return nested tag objects for reading, but accept IDs for writing."""
+        data = super().to_representation(instance)
+        data['tags'] = TagSerializer(instance.tags.all(), many=True).data
+        return data
