@@ -1,9 +1,112 @@
+import { useState, useEffect } from "react";
+import { listEntries } from "../api/Entries";
+
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
 export default function CalendarPanel({ selectedDate, onDateChange }) {
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [entriesByDay, setEntriesByDay] = useState(new Set());
+
+  // Fetch entries for the month
+  useEffect(() => {
+    async function fetchEntries() {
+      const startDate = new Date(currentYear, currentMonth, 1);
+      const endDate = new Date(currentYear, currentMonth + 1, 0);
+
+      try {
+        const data = await listEntries({
+          // We'll filter client-side since your API can filter by date
+          date: null,
+        });
+
+        // Filter to this month
+        const monthEntries = data.filter((entry) => {
+          const d = new Date(entry.date);
+          return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+        });
+
+        const daysWithEntries = new Set(monthEntries.map((entry) => new Date(entry.date).getDate()));
+        setEntriesByDay(daysWithEntries);
+      } catch (err) {
+        console.error("Failed to load calendar entries", err);
+      }
+    }
+
+    fetchEntries();
+  }, [currentMonth, currentYear]);
+
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  const prevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+  };
+
+  const nextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+  };
+
+  const handleDayClick = (day) => {
+    const dateStr = new Date(currentYear, currentMonth, day)
+      .toISOString()
+      .slice(0, 10);
+    onDateChange(dateStr);
+  };
+
+  const yearOptions = [];
+  for (let y = currentYear - 10; y <= currentYear + 10; y++) yearOptions.push(y);
+
   return (
     <div className="panel calendar-panel">
-      <h3>Calendar</h3>
-      <p>Calendar coming soon. Selected date: {selectedDate}</p>
-      <input type="date" value={selectedDate} onChange={(e) => onDateChange(e.target.value)} />
+      <div className="calendar-header">
+        <button onClick={prevMonth}>&lt;</button>
+        <h3>{new Date(currentYear, currentMonth).toLocaleString("default", { month: "long" })} {currentYear}</h3>
+        <button onClick={nextMonth}>&gt;</button>
+        <select
+          value={currentYear}
+          onChange={(e) => setCurrentYear(parseInt(e.target.value))}
+          style={{ marginLeft: "auto" }}
+        >
+          {yearOptions.map((y) => (
+            <option key={y} value={y}>{y}</option>
+          ))}
+        </select>
+      </div>
+      <div className="calendar-grid">
+        {DAYS.map((d) => (
+          <div key={d} className="calendar-day-label">{d}</div>
+        ))}
+        {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+          <div key={`empty-${i}`} className="calendar-cell empty"></div>
+        ))}
+        {Array.from({ length: daysInMonth }).map((_, i) => {
+          const day = i + 1;
+          const isToday =
+            selectedDate === new Date(currentYear, currentMonth, day).toISOString().slice(0, 10);
+          const hasEntry = entriesByDay.has(day);
+          return (
+            <div
+              key={day}
+              className={`calendar-cell ${isToday ? "selected" : ""} ${hasEntry ? "has-entry" : ""}`}
+              onClick={() => handleDayClick(day)}
+            >
+              {day}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
