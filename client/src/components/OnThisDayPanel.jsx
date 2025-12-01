@@ -12,7 +12,7 @@ function EntryCard({ entry }) {
   return (
     <div 
       className="on-this-day-entry"
-      onClick={() => navigate(`/entries/${entry.id}`)}
+      onClick={() => navigate(`/entries/${entry.id}/edit`)}
       style={{ cursor: "pointer", padding: "8px", border: "1px solid #ddd", borderRadius: "4px", marginBottom: "8px" }}
     >
       <div style={{ display: "flex", gap: "8px" }}>

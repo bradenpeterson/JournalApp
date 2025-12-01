@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import CurrentEntryPanel from "./CurrentEntryPanel";
 import OnThisDayPanel from "./OnThisDayPanel";
@@ -17,7 +18,9 @@ export default function Dashboard() {
         return `${y}-${m}-${day}`;
     }
 
-    const [selectedDate, setSelectedDate] = useState(localISODate());
+    const [searchParams] = useSearchParams();
+    const initialDate = searchParams.get('date') || localISODate();
+    const [selectedDate, setSelectedDate] = useState(initialDate);
 
     return (
         <div className="dashboard-container">

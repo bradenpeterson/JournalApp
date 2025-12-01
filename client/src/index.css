@@ -360,3 +360,50 @@ button {
 .error-text {
     color: red;
 }
+
+/* --- Read-only Entry View + Editor Buttons --- */
+.entry-readonly {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.entry-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-entry-button,
+.delete-entry-button,
+.cancel-entry-button {
+  background-color: #2563eb;
+  border: none;
+  color: white;
+  padding: 0.45rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.delete-entry-button {
+  background-color: #ef4444;
+}
+
+.edit-entry-button:hover { background-color: #1d4ed8; }
+.delete-entry-button:hover { background-color: #dc2626; }
+.cancel-entry-button { background-color: #6b7280; }
+.cancel-entry-button:hover { background-color: #4b5563; }
+
+.entry-meta { display: flex; gap: 1rem; align-items: center; }
+.entry-mood { font-weight: 600; color: #f59e0b; }
+.entry-tags { display: flex; gap: 0.4rem; }
+
+.entry-image img { max-width: 100%; border-radius: 8px; }
+
+/* Slightly brighter input fields in dark theme */
+.entry-title-input, .entry-content-textarea {
+  background-color: #111827;
+  border: 1px solid #2b3440;
+  color: #f8fafc;
+}
+

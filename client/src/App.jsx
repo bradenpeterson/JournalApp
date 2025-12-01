@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import Dashboard from "./components/Dashboard";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import EntryDetail from "./pages/EntryDetail";
 import EntryEditor from "./pages/EntryEditor";
 
 function ProtectedRoute({ children }) {
@@ -37,8 +36,8 @@ export default function App() {
             <Route path="/registration/sign_in" element={<SignIn />} />
             <Route path="/registration/sign_up" element={<SignUp />} />
             <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/entries/:id" element={<ProtectedRoute><EntryDetail /></ProtectedRoute>} />
-            <Route path="/entries/new" element={<ProtectedRoute><EntryEditor /></ProtectedRoute>} />
+                <Route path="/entries/:id/edit" element={<ProtectedRoute><EntryEditor /></ProtectedRoute>} />
+                <Route path="/entries/new" element={<ProtectedRoute><EntryEditor /></ProtectedRoute>} />
         </Routes>
     );
 }

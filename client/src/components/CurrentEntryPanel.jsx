@@ -47,8 +47,8 @@ export default function CurrentEntryPanel({ selectedDate }) {
 
   function handleClickPanel() {
     if (entry && entry.id) {
-      // Go to full entry page
-      navigate(`/entries/${entry.id}`);
+      // Entry exists — open it in the editor so the user can view and edit it
+      navigate(`/entries/${entry.id}/edit`);
     } else {
       // No entry yet for this date → go to "new entry" page with date prefilled
       navigate(`/entries/new?date=${selectedDate}`);
@@ -58,7 +58,7 @@ export default function CurrentEntryPanel({ selectedDate }) {
   function handleAddTagClick(e) {
     e.stopPropagation(); // don't trigger the panel click
     if (entry && entry.id) {
-      navigate(`/entries/${entry.id}#tags`);
+      navigate(`/entries/${entry.id}/edit#tags`);
     } else {
       navigate(`/entries/new?date=${selectedDate}#tags`);
     }
