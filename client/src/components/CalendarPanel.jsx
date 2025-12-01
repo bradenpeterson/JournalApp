@@ -22,7 +22,11 @@ export default function CalendarPanel({ selectedDate, onDateChange }) {
           return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
         });
 
-        const daysWithEntries = new Set(monthEntries.map((entry) => new Date(entry.date).getDate()));
+        const daysWithEntries = new Set(monthEntries.map((entry) => {
+          // Parse entry.date (YYYY-MM-DD) as local date
+          const [y, m, d] = (entry.date || '').split('-').map(Number);
+          return new Date(y, m - 1, d).getDate();
+        }));
         setEntriesByDay(daysWithEntries);
       } catch (err) {
         console.error("Failed to load calendar entries", err);
@@ -54,9 +58,10 @@ export default function CalendarPanel({ selectedDate, onDateChange }) {
   };
 
   const handleDayClick = (day) => {
-    const dateStr = new Date(currentYear, currentMonth, day)
-      .toISOString()
-      .slice(0, 10);
+    const y = currentYear;
+    const m = String(currentMonth + 1).padStart(2, '0');
+    const d = String(day).padStart(2, '0');
+    const dateStr = `${y}-${m}-${d}`;
     onDateChange(dateStr);
   };
 
@@ -88,8 +93,10 @@ export default function CalendarPanel({ selectedDate, onDateChange }) {
         ))}
         {Array.from({ length: daysInMonth }).map((_, i) => {
           const day = i + 1;
-          const isToday =
-            selectedDate === new Date(currentYear, currentMonth, day).toISOString().slice(0, 10);
+          const isoForCell = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(
+            day
+          ).padStart(2, '0')}`;
+          const isToday = selectedDate === isoForCell;
           const hasEntry = entriesByDay.has(day);
           return (
             <div

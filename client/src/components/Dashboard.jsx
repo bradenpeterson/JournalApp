@@ -9,7 +9,15 @@ import Calendar from "./CalendarPanel";
 import DateNavigator from "./DateNavigator";
 
 export default function Dashboard() {
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
+    // Use local date (YYYY-MM-DD) to avoid timezone differences with toISOString
+    function localISODate(d = new Date()) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    }
+
+    const [selectedDate, setSelectedDate] = useState(localISODate());
 
     return (
         <div className="dashboard-container">
