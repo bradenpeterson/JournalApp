@@ -16,10 +16,11 @@ export default function CalendarPanel({ selectedDate, onDateChange }) {
         const data = await listEntries({});
         const entries = data.results || data;
 
-        // Filter to this month
+        // Filter to this month — parse entry.date as local YYYY-MM-DD to avoid UTC parsing issues
         const monthEntries = entries.filter((entry) => {
-          const d = new Date(entry.date);
-          return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+          const [y, m, d] = (entry.date || '').split('-').map(Number);
+          const dt = new Date(y, (m || 1) - 1, d || 1);
+          return dt.getFullYear() === currentYear && dt.getMonth() === currentMonth;
         });
 
         const daysWithEntries = new Set(monthEntries.map((entry) => {

@@ -101,28 +101,30 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
                 break
         
         return streak
-    
+
     def _calculate_week_streak(self, user):
-        """Calculate consecutive weeks (ISO weeks) with at least 1 entry."""
-        entries = JournalEntry.objects.filter(user=user).order_by('-date')
+        """Calculate consecutive ISO weeks with at least 1 entry, starting from this week."""
+        from collections import defaultdict
+
+        entries = JournalEntry.objects.filter(user=user)
         if not entries.exists():
             return 0
-        
+
+        # Build a set of (year, week) tuples for all entries
+        weeks_with_entries = set((e.date.isocalendar()[0], e.date.isocalendar()[1]) for e in entries)
+
         streak = 0
-        current_date = timezone.localdate()
-        
-        # Start from the current ISO week
-        while True:
-            year, week_num, _ = current_date.isocalendar()
-            week_start = timezone.datetime.strptime(f'{year}-W{week_num:02d}-1', "%Y-W%W-%w").date()
-            week_end = week_start + timedelta(days=6)
-            
-            if JournalEntry.objects.filter(user=user, date__gte=week_start, date__lte=week_end).exists():
-                streak += 1
-                current_date = week_start - timedelta(days=1)
-            else:
-                break
-        
+        today = timezone.localdate()
+        year, week_num, _ = today.isocalendar()
+
+        # Loop backward week by week
+        while (year, week_num) in weeks_with_entries:
+            streak += 1
+            # Move to previous week
+            week_num -= 1
+            if week_num == 0:
+                year -= 1
+                week_num = 52  # approximate, ISO week 52/53
         return streak
     
 
