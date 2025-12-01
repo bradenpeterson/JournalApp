@@ -86,9 +86,6 @@ export default function CurrentEntryPanel({ selectedDate }) {
     >
       <div className="current-entry-header">
         <h2>Current Entry</h2>
-        <span className="current-entry-date">
-          {selectedDate || "No date selected"}
-        </span>
       </div>
 
       <div className="current-entry-body">
@@ -112,19 +109,16 @@ export default function CurrentEntryPanel({ selectedDate }) {
         )}
       </div>
 
-      <div
-        className="current-entry-footer"
-        onClick={(e) => e.stopPropagation()} // so clicking tags row doesn’t navigate
-      >
+      <div className="current-entry-footer">
         <div className="tag-list">
           {tags.length > 0 ? (
             tags.map((tag) => (
-              <span key={tag.id || tag.name} className="tag-chip">
+              <span key={tag.id || tag.name} className="tag-chip" onClick={(e) => e.stopPropagation()}>
                 {tag.name}
               </span>
             ))
           ) : (
-            <span className="muted-text small-text">No tags yet</span>
+            <span></span>
           )}
         </div>
         <button

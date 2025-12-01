@@ -74,6 +74,35 @@ a:hover {
   flex-direction: column;
 }
 
+.date-navigator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+  gap: 1rem;
+}
+
+.date-navigator button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+}
+
+.date-navigator button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.current-date {
+  min-width: 160px;
+  text-align: center;
+}
+
 /* --- CurrentEntryPanel --- */
 .current-entry-panel {
   cursor: pointer;
