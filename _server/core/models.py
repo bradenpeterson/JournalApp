@@ -31,3 +31,18 @@ class JournalEntry(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.date})"
+
+
+class Mood(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='moods')
+    date = models.DateField(default=timezone.localdate)
+    mood = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'date')
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"Mood {self.mood} on {self.date}"

@@ -10,7 +10,6 @@ export default function EntryView({ entry, onEdit, onDelete }) {
 
       <h2>{entry?.title || '(No title)'}</h2>
       <div className="entry-meta">
-        {entry?.mood && <div className="entry-mood">Mood: {entry.mood}</div>}
         {entry?.tags && entry.tags.length > 0 && (
           <div className="entry-tags">
             {entry.tags.map(t => (

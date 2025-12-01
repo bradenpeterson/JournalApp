@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import JournalEntry, Tag
+from .models import JournalEntry, Tag, Mood
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,3 +27,10 @@ class JournalEntrySerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['tags'] = TagSerializer(instance.tags.all(), many=True).data
         return data
+
+
+class MoodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mood
+        fields = ['id', 'user', 'date', 'mood', 'created_at', 'updated_at']
+        read_only_fields = ['user', 'created_at', 'updated_at']

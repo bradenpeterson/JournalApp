@@ -8,8 +8,9 @@ from django.utils import timezone
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import JournalEntry, Tag
+from .models import JournalEntry, Tag, Mood
 from .serializers import JournalEntrySerializer, TagSerializer
+from .serializers import JournalEntrySerializer, TagSerializer, MoodSerializer
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 
@@ -138,6 +139,24 @@ class TagViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Tag.objects.filter(user=self.request.user)
     
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class MoodViewSet(viewsets.ModelViewSet):
+    serializer_class = MoodSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        qs = Mood.objects.filter(user=self.request.user)
+        date_str = self.request.query_params.get('date')
+        if date_str:
+            try:
+                qs = qs.filter(date=date_str)
+            except ValueError:
+                pass
+        return qs
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 

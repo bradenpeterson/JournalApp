@@ -189,6 +189,8 @@ a:hover {
   flex-direction: column;
   gap: 0.5rem;
 }
+/* panel relative so the clear button can be absolute positioned */
+.mood-panel { position: relative; }
 
 .mood-button {
   background-color: #2563eb;
@@ -203,6 +205,59 @@ a:hover {
 .mood-button:hover {
   background-color: #1d4ed8;
 }
+
+.mood-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.mood-face {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #2a2a2a;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #f0f0f0;
+}
+
+.mood-face svg { width: 28px; height: 28px; }
+
+.mood-face.selected {
+  box-shadow: 0 0 0 3px rgba(96,165,250,0.18), 0 6px 18px rgba(0,0,0,0.5);
+  background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%);
+  color: white;
+}
+
+@keyframes mood-pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.95; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.mood-face.saved {
+  animation: mood-pulse 0.8s ease-out;
+}
+
+.mood-face:disabled, .mood-button:disabled { opacity: 0.6; cursor: default; }
+
+.clear-mood {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+  color: #cbd5e1;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.clear-mood:hover { background: rgba(255,255,255,0.04); }
 
 /* --- CalendarPanel --- */
 .calendar-panel {
