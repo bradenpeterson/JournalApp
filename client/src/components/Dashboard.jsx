@@ -21,6 +21,7 @@ export default function Dashboard() {
     const [searchParams] = useSearchParams();
     const initialDate = searchParams.get('date') || localISODate();
     const [selectedDate, setSelectedDate] = useState(initialDate);
+    
 
     return (
         <div className="dashboard-container">
@@ -36,6 +37,7 @@ export default function Dashboard() {
                 <MoodPanel selectedDate={selectedDate} />
                 <Calendar selectedDate={selectedDate} onDateChange={setSelectedDate} />
             </div>
+            
         </div>
     );
 }

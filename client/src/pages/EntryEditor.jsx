@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { createEntry, getEntry, updateEntry, deleteEntry } from "../api/entries";
+import EntryView from "../components/EntryView";
+import EntryForm from "../components/EntryForm";
 
 // Helpers to parse/format YYYY-MM-DD as a local date (avoid UTC parsing)
 function parseISO(dateStr) {
@@ -63,6 +65,17 @@ export default function EntryEditor() {
         }
     };
 
+    const handleDelete = async () => {
+        if (!window.confirm('Delete this entry? This cannot be undone.')) return;
+        try {
+            await deleteEntry(id);
+            navigate(`/?date=${entryDate}`);
+        } catch (err) {
+            console.error('Failed to delete entry', err);
+            setError('Failed to delete entry');
+        }
+    };
+
     // If editing an existing entry (id present), load it
     useEffect(() => {
         let cancelled = false;
@@ -97,76 +110,17 @@ export default function EntryEditor() {
             </header>
 
             {id && !isEditing ? (
-                <div className="entry-readonly">
-                    <div className="entry-actions">
-                        <button onClick={() => setIsEditing(true)} className="edit-entry-button">Edit</button>
-                        <button onClick={async () => {
-                            if (!window.confirm('Delete this entry? This cannot be undone.')) return;
-                            try {
-                                await deleteEntry(id);
-                                navigate(`/?date=${entryDate}`);
-                            } catch (err) {
-                                console.error('Failed to delete entry', err);
-                                setError('Failed to delete entry');
-                            }
-                        }} className="delete-entry-button">Delete</button>
-                    </div>
-
-                    <h2>{entry?.title || '(No title)'}</h2>
-                    <div className="entry-meta">
-                        {entry?.mood && <div className="entry-mood">Mood: {entry.mood}</div>}
-                        {entry?.tags && entry.tags.length > 0 && (
-                            <div className="entry-tags">
-                                {entry.tags.map(t => (
-                                    <span key={t.id || t.name} className="tag-chip">{t.name}</span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {entry?.image && (
-                        <div className="entry-image"><img src={entry.image} alt="entry" style={{ maxWidth: '100%', borderRadius: 6 }} /></div>
-                    )}
-
-                    <div className="entry-content"><pre style={{ whiteSpace: 'pre-wrap' }}>{entry?.content || ''}</pre></div>
-                </div>
+                <EntryView entry={entry} onEdit={() => setIsEditing(true)} onDelete={handleDelete} />
             ) : (
-                <form onSubmit={handleSubmit} className="entry-editor-form">
-                    <input
-                        type="text"
-                        placeholder="Entry Title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        className="entry-title-input"
-                    />
-
-                    <textarea
-                        placeholder="Write your entry here..."
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        className="entry-content-textarea"
-                    />
-
-                    {error && <p className="error-text">{error}</p>}
-
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <button type="submit" disabled={loading} className="save-entry-button">
-                            {loading ? "Saving..." : "Save Entry"}
-                        </button>
-                        <button type="button" onClick={() => {
-                            if (id) {
-                                // cancel editing -> go back to read-only view
-                                setIsEditing(false);
-                                // restore title/content from loaded entry
-                                setTitle(entry?.title || '');
-                                setContent(entry?.content || '');
-                            } else {
-                                // cancel new entry -> back to dashboard
-                                navigate('/');
-                            }
-                        }} className="cancel-entry-button">Cancel</button>
-                    </div>
-                </form>
+                <EntryForm title={title} content={content} setTitle={setTitle} setContent={setContent} onSave={handleSubmit} onCancel={() => {
+                    if (id) {
+                        setIsEditing(false);
+                        setTitle(entry?.title || '');
+                        setContent(entry?.content || '');
+                    } else {
+                        navigate('/');
+                    }
+                }} loading={loading} />
             )}
         </div>
     );
