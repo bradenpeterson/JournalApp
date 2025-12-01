@@ -19,7 +19,6 @@ export default function Sidebar() {
         <h3>Journal</h3>
         <ul>
           <li><Link to="/">Home</Link></li>
-          <li><Link to="/entries/new">New Entry</Link></li>
         </ul>
         <button onClick={handleLogout} className="logout-button">
           Log Out
