@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getEntriesByMonthDay } from "../api/Entries";
+import { getEntriesByMonthDay } from "../api/entries";
 
 function EntryCard({ entry }) {
   const navigate = useNavigate();

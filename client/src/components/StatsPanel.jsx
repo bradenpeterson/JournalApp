@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getStats } from "../api/Entries";
+import { getStats } from "../api/entries";
 
 export default function StatsPanel() {
   const [stats, setStats] = useState(null);

@@ -10,6 +10,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import JournalEntry, Tag
 from .serializers import JournalEntrySerializer, TagSerializer
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
 
 # Load manifest when server launches
 MANIFEST = {}
@@ -136,3 +138,9 @@ class TagViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+def csrf_token(request):
+    """Return a JSON response and ensure a CSRF cookie is set for the client."""
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})

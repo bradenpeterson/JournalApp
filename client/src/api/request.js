@@ -5,9 +5,15 @@ export async function request(path, { method = 'GET', body, params, headers = {}
     url += `?${search.toString()}`
   }
 
+  function getCookie(name) {
+    if (typeof document === 'undefined') return null
+    const match = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]*)'))
+    return match ? decodeURIComponent(match[2]) : null
+  }
+
   const opts = {
     method,
-    credentials: 'include', // send cookies across origins
+    credentials: 'include',
     headers: { ...headers },
   }
 
@@ -16,6 +22,15 @@ export async function request(path, { method = 'GET', body, params, headers = {}
     opts.body = JSON.stringify(body)
   } else if (body instanceof FormData) {
     opts.body = body
+  }
+
+  // Add CSRF token for unsafe methods
+  const unsafeMethods = ['POST', 'PUT', 'PATCH', 'DELETE']
+  if (unsafeMethods.includes(method.toUpperCase())) {
+    const csrftoken = getCookie('csrftoken')
+    if (csrftoken) {
+      opts.headers['X-CSRFToken'] = csrftoken
+    }
   }
 
   const res = await fetch(url, opts)

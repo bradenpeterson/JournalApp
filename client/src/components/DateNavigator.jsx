@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export default function DateNavigator({ selectedDate, onDateChange }) {
   // Helper to format date nicely
   function formatDate(dateStr) {

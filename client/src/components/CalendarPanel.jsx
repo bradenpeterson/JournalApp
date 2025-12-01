@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { listEntries } from "../api/Entries";
+import { listEntries } from "../api/entries";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -12,17 +12,12 @@ export default function CalendarPanel({ selectedDate, onDateChange }) {
   // Fetch entries for the month
   useEffect(() => {
     async function fetchEntries() {
-      const startDate = new Date(currentYear, currentMonth, 1);
-      const endDate = new Date(currentYear, currentMonth + 1, 0);
-
       try {
-        const data = await listEntries({
-          // We'll filter client-side since your API can filter by date
-          date: null,
-        });
+        const data = await listEntries({});
+        const entries = data.results || data;
 
         // Filter to this month
-        const monthEntries = data.filter((entry) => {
+        const monthEntries = entries.filter((entry) => {
           const d = new Date(entry.date);
           return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
         });
