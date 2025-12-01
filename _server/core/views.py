@@ -49,6 +49,13 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
             except (ValueError, AttributeError):
                 pass
         
+        date_str = self.request.query_params.get('date')
+        if date_str:
+            try:
+                qs = qs.filter(date=date_str)
+            except ValueError:
+                pass
+
         return qs
     
     def perform_create(self, serializer):

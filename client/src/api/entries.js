@@ -1,4 +1,4 @@
-import { request } from './Request'
+import { request } from './request'
 
 export const listEntries = ({ page = 1, search = '', date } = {}) => {
   const params = { page }
