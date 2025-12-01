@@ -29,7 +29,7 @@ export default function Dashboard() {
                 <StatsPanel />
             </div>
             <div className="right-main-content">
-                <QuotePanel />
+                <QuotePanel selectedDate={selectedDate} />
                 <MoodPanel selectedDate={selectedDate} />
                 <Calendar selectedDate={selectedDate} onDateChange={setSelectedDate} />
             </div>
