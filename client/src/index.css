@@ -44,10 +44,18 @@ a:hover {
 
 .panel h3 {
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.1rem;
   font-size: 1.6rem;
   color: var(--color-primary);
   font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: 600;
+}
+
+.panel h4 {
+  margin-top: .5rem;
+  margin-bottom: 0rem;
+  font-size: 1.15rem;
+  color: var(--color-primary);
   font-weight: 600;
 }
 

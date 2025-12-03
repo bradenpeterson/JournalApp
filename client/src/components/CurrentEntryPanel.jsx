@@ -78,7 +78,7 @@ export default function CurrentEntryPanel({ selectedDate, tagRefreshKey }) {
       style={{ position: 'relative' }}
     >
       <div className="current-entry-header">
-        <h3>Current Entry</h3>
+        <h3>Today's Entry</h3>
       </div>
 
       <div className="current-entry-body">
