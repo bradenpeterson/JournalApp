@@ -13,22 +13,30 @@ export default function TagPicker({ selectedDate, onApplied, onClose }) {
 
   useEffect(() => {
     let mounted = true;
+    // Only fetch suggestions when the user types/filter is non-empty.
+    if (!filter || !filter.trim()) {
+      setTags([]);
+      return () => { mounted = false };
+    }
+
     setLoading(true);
-    // Request only the most recent 5 tags for this picker
-    listTags(1, 5)
+    listTags(1, 50)
       .then((res) => {
         const items = res.results || res;
         if (!mounted) return;
-        // Keep only the most recent five tags
-        setTags(Array.isArray(items) ? items.slice(0, 5) : []);
+        // Find matches client-side and keep up to 5
+        const arr = Array.isArray(items) ? items : [];
+        const matches = arr.filter(t => t.name.toLowerCase().includes(filter.toLowerCase())).slice(0, 5);
+        setTags(matches);
       })
       .catch((err) => {
         console.error('Failed to load tags', err);
         if (mounted) setError('Failed to load tags');
       })
       .finally(() => { if (mounted) setLoading(false); });
+
     return () => { mounted = false };
-  }, []);
+  }, [filter]);
 
   const filtered = tags.filter(t => t.name.toLowerCase().includes(filter.toLowerCase()));
 

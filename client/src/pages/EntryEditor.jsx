@@ -33,6 +33,7 @@ export default function EntryEditor() {
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [tags, setTags] = useState([]);
     const [entry, setEntry] = useState(null);
     const [isEditing, setIsEditing] = useState(!id);
     const [loading, setLoading] = useState(false);
@@ -48,11 +49,11 @@ export default function EntryEditor() {
         try {
             if (id) {
                 // update existing entry
-                const updated = await updateEntry(id, { title, content, date: entryDate });
+                const updated = await updateEntry(id, { title, content, date: entryDate, tags: tags.map(t => t.id).filter(Boolean) });
                 setEntry(updated);
                 setIsEditing(false);
             } else {
-                const created = await createEntry({ title, content, date: entryDate });
+                const created = await createEntry({ title, content, date: entryDate, tags: tags.map(t => t.id).filter(Boolean) });
                 // After creating an entry for a (possibly) previous day, navigate
                 // back to the dashboard with that date selected.
                 navigate(`/?date=${entryDate}`);
@@ -88,6 +89,7 @@ export default function EntryEditor() {
                 setEntry(data);
                 setTitle(data.title || "");
                 setContent(data.content || "");
+                setTags(data.tags || []);
                 if (data.date) setEntryDate(data.date);
                 // When editing an existing entry, default to read-only
                 setIsEditing(false);
@@ -112,7 +114,7 @@ export default function EntryEditor() {
             {id && !isEditing ? (
                 <EntryView entry={entry} onEdit={() => setIsEditing(true)} onDelete={handleDelete} />
             ) : (
-                <EntryForm title={title} content={content} setTitle={setTitle} setContent={setContent} onSave={handleSubmit} onCancel={() => {
+                <EntryForm title={title} content={content} setTitle={setTitle} setContent={setContent} tags={tags} setTags={setTags} onSave={handleSubmit} onCancel={() => {
                     if (id) {
                         setIsEditing(false);
                         setTitle(entry?.title || '');
