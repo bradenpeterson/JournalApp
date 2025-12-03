@@ -69,12 +69,17 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
         """Return user's journal statistics."""
         user = request.user
         entries = JournalEntry.objects.filter(user=user).order_by('date')
-        
+
         # Total entries
         total_entries = entries.count()
-        
-        # Total words
-        total_words = sum(len(e.content.split()) for e in entries if e.content)
+
+        # Total words: use the denormalized `word_count` column for a fast DB aggregate
+        from django.db.models import Sum
+        from django.db.models.functions import Coalesce
+
+        total_words = JournalEntry.objects.filter(user=user).aggregate(
+            total_words=Coalesce(Sum('word_count'), 0)
+        )['total_words']
         
         # Day streak (consecutive days from today backwards)
         day_streak = self._calculate_day_streak(user)
@@ -91,41 +96,43 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
     
     def _calculate_day_streak(self, user):
         """Calculate consecutive days with entries from today backwards."""
+        # Fetch all distinct dates for the user in one query to avoid N queries
+        # for each day while walking back.
+        dates = JournalEntry.objects.filter(user=user).values_list('date', flat=True).distinct()
+        date_set = set(dates)
+
         streak = 0
         current_date = timezone.localdate()
-        
-        while True:
-            if JournalEntry.objects.filter(user=user, date=current_date).exists():
-                streak += 1
-                current_date -= timedelta(days=1)
-            else:
-                break
-        
+
+        while current_date in date_set:
+            streak += 1
+            current_date -= timedelta(days=1)
+
         return streak
 
     def _calculate_week_streak(self, user):
         """Calculate consecutive ISO weeks with at least 1 entry, starting from this week."""
-        from collections import defaultdict
-
-        entries = JournalEntry.objects.filter(user=user)
-        if not entries.exists():
+        # Fetch all distinct entry dates for user and compute ISO weeks set in memory
+        dates = JournalEntry.objects.filter(user=user).values_list('date', flat=True).distinct()
+        if not dates:
             return 0
 
-        # Build a set of (year, week) tuples for all entries
-        weeks_with_entries = set((e.date.isocalendar()[0], e.date.isocalendar()[1]) for e in entries)
+        weeks_with_entries = set((d.isocalendar()[0], d.isocalendar()[1]) for d in dates)
 
         streak = 0
         today = timezone.localdate()
-        year, week_num, _ = today.isocalendar()
+        # Start from the Monday of this ISO week
+        week_start = today - timedelta(days=(today.isoweekday() - 1))
 
-        # Loop backward week by week
-        while (year, week_num) in weeks_with_entries:
-            streak += 1
-            # Move to previous week
-            week_num -= 1
-            if week_num == 0:
-                year -= 1
-                week_num = 52  # approximate, ISO week 52/53
+        # Loop backward week by week by subtracting 7 days
+        while True:
+            y, w, _ = week_start.isocalendar()
+            if (y, w) in weeks_with_entries:
+                streak += 1
+                week_start -= timedelta(days=7)
+            else:
+                break
+
         return streak
     
 
