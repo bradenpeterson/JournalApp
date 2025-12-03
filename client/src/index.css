@@ -311,14 +311,35 @@ a:hover {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 0.75rem;
+  margin-top: 1rem;
 }
 
 .stat-card {
-  background-color: var(--color-bg);
-  padding: 0.75rem;
-  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));
+  padding: .9rem;
+  border-radius: 12px;
   text-align: center;
   border: 1px solid rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 88px;
+}
+
+.stat-label {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted-text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stat-value {
+  margin: 10px 0 0 0;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--color-primary);
 }
 
 /* --- QuotePanel --- */
