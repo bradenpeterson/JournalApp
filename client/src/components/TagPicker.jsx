@@ -86,7 +86,22 @@ export default function TagPicker({ selectedDate, onApplied, onClose }) {
 
   return (
     <div className="tagpicker-popover">
-      <input className="tagpicker-input" placeholder="Filter or type new tag" value={filter} onChange={(e) => setFilter(e.target.value)} />
+      <input
+        className="tagpicker-input"
+        placeholder="Filter or type new tag"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        onKeyDown={(e) => {
+          // Prevent Enter/Space from bubbling to parent panel which would
+          // trigger the panel's key handler and navigate away.
+          e.stopPropagation();
+          if (e.key === 'Enter') {
+            // Convenience: create the tag with Enter
+            e.preventDefault();
+            handleCreate();
+          }
+        }}
+      />
       <div className="tagpicker-list">
         {loading ? <div className="muted-text">Loading...</div> : (
           filtered.length ? filtered.map(t => (

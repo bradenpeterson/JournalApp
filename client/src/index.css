@@ -199,7 +199,7 @@ a:hover {
 
 /* Preview snippet for current entry: show more lines but clamp so it isn't the full entry */
 .current-entry-preview {
-  color: var(--text);
+  color: var(--muted-text);
   margin-top: 0.5rem;
   line-height: 1.6;
   font-size: 1rem;
@@ -378,6 +378,71 @@ a:hover {
   padding-top: 0.4rem;
   padding-bottom: 0.4rem;
 }
+
+/* --- TagPicker Popover --- */
+.tagpicker-popover {
+  min-width: 260px;
+  max-width: 360px;
+  background: var(--color-surface);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 12px 34px rgba(43,37,33,0.10);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: pop-in 140ms ease;
+}
+
+@keyframes pop-in {
+  from { transform: translateY(-6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.tagpicker-input {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: var(--color-bg);
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.tagpicker-input:focus {
+  box-shadow: 0 0 0 3px rgba(107,90,72,0.06);
+}
+
+.tagpicker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow: auto;
+  padding: 4px 2px;
+}
+
+.tagpicker-item {
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text);
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.tagpicker-item:hover {
+  background: rgba(0,0,0,0.03);
+  transform: translateY(-2px);
+}
+
+.tagpicker-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.tagpicker-popover .error-text { margin-top: 6px; }
 
 .mood-face {
   width: 44px;
