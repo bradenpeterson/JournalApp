@@ -89,9 +89,9 @@ export default function CalendarPanel({ selectedDate, onDateChange }) {
   return (
     <div className="panel calendar-panel">
       <div className="calendar-header">
-        <button onClick={prevMonth}>&lt;</button>
+        <button onClick={prevMonth}>←</button>
         <h3>{new Date(currentYear, currentMonth).toLocaleString("default", { month: "long" })} {currentYear}</h3>
-        <button onClick={nextMonth}>&gt;</button>
+        <button onClick={nextMonth}>→</button>
         <select
           value={currentYear}
           onChange={(e) => setCurrentYear(parseInt(e.target.value))}
