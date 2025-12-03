@@ -1,6 +1,7 @@
 import { request } from './request'
 
-export const listTags = (page = 1) => request('/api/tags/', { params: { page } })
+// Request tag list. Optionally pass `pageSize` to control number of items returned.
+export const listTags = (page = 1, pageSize = undefined) => request('/api/tags/', { params: pageSize ? { page, page_size: pageSize } : { page } })
 
 export const getTag = (id) => request(`/api/tags/${id}/`)
 

@@ -1,49 +1,45 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getEntriesByDate } from "../api/entries";
+import TagPicker from './TagPicker';
 
-export default function CurrentEntryPanel({ selectedDate }) {
+export default function CurrentEntryPanel({ selectedDate, tagRefreshKey }) {
+  // Accept a refresh key so parent can force reloading tags after changes
+  // (e.g., when TagPicker modifies tags for the current entry).
+  // Keep backward compatible signature.
   const [entry, setEntry] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [tagPickerOpen, setTagPickerOpen] = useState(false);
 
   const navigate = useNavigate();
 
+  async function fetchEntry() {
+    if (!selectedDate) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getEntriesByDate(selectedDate);
+      const firstEntry = Array.isArray(data) && data.length > 0 ? data[0] : null;
+      setEntry(firstEntry);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load entry.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     let cancelled = false;
-
-    async function loadEntry() {
-      if (!selectedDate) return;
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await getEntriesByDate(selectedDate);
-        if (cancelled) return;
-
-        const firstEntry =
-          Array.isArray(data) && data.length > 0 ? data[0] : null;
-
-        setEntry(firstEntry);
-      } catch (err) {
-        if (!cancelled) {
-          console.error(err);
-          setError("Failed to load entry.");
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    }
-
-    loadEntry();
-
+    (async () => {
+      if (cancelled) return;
+      await fetchEntry();
+    })();
     return () => {
       cancelled = true;
     };
-  }, [selectedDate]);
+  }, [selectedDate, tagRefreshKey]);
 
   function handleClickPanel() {
     if (entry && entry.id) {
@@ -57,11 +53,7 @@ export default function CurrentEntryPanel({ selectedDate }) {
 
   function handleAddTagClick(e) {
     e.stopPropagation(); // don't trigger the panel click
-    if (entry && entry.id) {
-      navigate(`/entries/${entry.id}/edit#tags`);
-    } else {
-      navigate(`/entries/new?date=${selectedDate}#tags`);
-    }
+    setTagPickerOpen((o) => !o);
   }
 
   // Helper: get a short preview of the content
@@ -72,7 +64,7 @@ export default function CurrentEntryPanel({ selectedDate }) {
     return entry.content.slice(0, maxLen) + "…";
   }
 
-  const tags = entry?.tags || []; 
+  const tags = entry?.tags || [];
 
   return (
     <div
@@ -83,6 +75,7 @@ export default function CurrentEntryPanel({ selectedDate }) {
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") handleClickPanel();
       }}
+      style={{ position: 'relative' }}
     >
       <div className="current-entry-header">
         <h2>Current Entry</h2>
@@ -95,17 +88,11 @@ export default function CurrentEntryPanel({ selectedDate }) {
           <p className="error-text">{error}</p>
         ) : entry ? (
           <>
-            <h3 className="current-entry-title">
-              {entry.title || "(No title)"}
-            </h3>
-            <p className="current-entry-preview">
-              {getPreviewText(entry) || "No content yet. Click to edit."}
-            </p>
+            <h3 className="current-entry-title">{entry.title || "(No title)"}</h3>
+            <p className="current-entry-preview">{getPreviewText(entry) || "No content yet. Click to edit."}</p>
           </>
         ) : (
-          <p className="muted-text">
-            No entry for this day yet. Click to start writing.
-          </p>
+          <p className="muted-text">No entry for this day yet. Click to start writing.</p>
         )}
       </div>
 
@@ -121,13 +108,16 @@ export default function CurrentEntryPanel({ selectedDate }) {
             <span></span>
           )}
         </div>
-        <button
-          type="button"
-          className="add-tag-button"
-          onClick={handleAddTagClick}
-        >
-          + Add tag
-        </button>
+        <div style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+          <button type="button" className="add-tag-button" onClick={handleAddTagClick}>
+            + Add tag
+          </button>
+          {tagPickerOpen && (
+            <div style={{ position: 'absolute', right: 0, bottom: '110%', zIndex: 40 }} onClick={(e) => e.stopPropagation()}>
+              <TagPicker selectedDate={selectedDate} onApplied={() => { fetchEntry(); setTagPickerOpen(false); }} onClose={() => setTagPickerOpen(false)} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -35,6 +35,7 @@ export default function DateNavigator({ selectedDate, onDateChange }) {
         ←
       </button>
       <span className="current-date">{formatDate(selectedDate)}</span>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }} />
       <button
         type="button"
         className="next-day-btn"
@@ -45,3 +46,5 @@ export default function DateNavigator({ selectedDate, onDateChange }) {
     </div>
   );
 }
+
+

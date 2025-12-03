@@ -21,14 +21,15 @@ export default function Dashboard() {
     const [searchParams] = useSearchParams();
     const initialDate = searchParams.get('date') || localISODate();
     const [selectedDate, setSelectedDate] = useState(initialDate);
+    const [tagRefreshKey, setTagRefreshKey] = useState(0);
     
 
     return (
         <div className="dashboard-container">
             <Sidebar />
             <div className="left-main-content">
-                <DateNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} />
-                <CurrentEntryPanel selectedDate={selectedDate} />
+                <DateNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} onTagApplied={() => setTagRefreshKey(k => k + 1)} />
+                <CurrentEntryPanel selectedDate={selectedDate} tagRefreshKey={tagRefreshKey} />
                 <OnThisDayPanel selectedDate={selectedDate} />
                 <StatsPanel />
             </div>
