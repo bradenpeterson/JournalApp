@@ -239,15 +239,71 @@ a:hover {
 
 /* --- OnThisDayPanel --- */
 .on-this-day-panel .on-this-day-entry {
-  background-color: var(--color-bg);
+  background-color: transparent;
   border-radius: 8px;
-  padding: 0.5rem;
+  margin-top: 1rem;
   margin-bottom: 0.5rem;
-  transition: background 0.2s;
 }
 
-.on-this-day-panel .on-this-day-entry:hover {
-  background-color: var(--color-surface);
+.on-this-day-panel .on-this-day-entry-inner {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));
+  border: 1px solid rgba(0,0,0,0.04);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.on-this-day-panel .on-this-day-entry:hover .on-this-day-entry-inner {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(43,37,33,0.06);
+}
+
+.on-this-day-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.on-this-day-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.on-this-day-panel .on-this-day-title {
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+  color: var(--color-primary);
+  font-weight: 700;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.on-this-day-preview {
+  margin: 0;
+  color: var(--muted-text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.on-this-day-meta {
+  margin: 0;
+  color: #9a9a9a;
+  font-size: 0.85rem;
 }
 
 /* --- StatsPanel --- */

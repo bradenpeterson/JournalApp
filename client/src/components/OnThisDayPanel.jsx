@@ -5,28 +5,30 @@ import { getEntriesByMonthDay } from "../api/entries";
 function EntryCard({ entry }) {
   const navigate = useNavigate();
 
-  const preview = entry.content && entry.content.length > 100 
-    ? entry.content.slice(0, 100) + "…" 
+  const preview = entry.content && entry.content.length > 140
+    ? entry.content.slice(0, 140) + "…"
     : entry.content || "(No content)";
 
   return (
-    <div 
+    <div
       className="on-this-day-entry"
       onClick={() => navigate(`/entries/${entry.id}/edit`)}
-      style={{ cursor: "pointer", padding: "8px", border: "1px solid #ddd", borderRadius: "4px", marginBottom: "8px" }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/entries/${entry.id}/edit`); }}
     >
-      <div style={{ display: "flex", gap: "8px" }}>
+      <div className="on-this-day-entry-inner">
         {entry.image && (
-          <img 
-            src={entry.image} 
-            alt="entry" 
-            style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "4px" }}
-          />
+          <img src={entry.image} alt="entry" className="on-this-day-thumb" />
         )}
-        <div style={{ flex: 1 }}>
-          <h4 style={{ margin: "0 0 4px 0" }}>{entry.title || "(No title)"}</h4>
-          <p style={{ margin: 0, fontSize: "0.9em", color: "#666" }}>{preview}</p>
-          <p style={{ margin: "4px 0 0 0", fontSize: "0.85em", color: "#999" }}>{entry.date}</p>
+        <div className="on-this-day-body">
+          <h4 className="on-this-day-title">{entry.title || "(No title)"}</h4>
+          <p className="on-this-day-preview">{preview}</p>
+          <p className="on-this-day-meta">{(function formatISOtoMDY(dateStr){
+            if(!dateStr) return '';
+            const [y,m,d] = dateStr.split('-');
+            return `${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}/${y}`;
+          })(entry.date)}</p>
         </div>
       </div>
     </div>
