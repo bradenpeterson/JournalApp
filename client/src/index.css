@@ -1,13 +1,24 @@
 /* --- Global --- */
+:root {
+  --color-primary: #6b5a48; /* dark brown */
+  --color-accent: #9eab9a; /* sage */
+  --color-bg: #fff4e9; /* cream base */
+  --color-surface: #e7d8c9; /* light cream */
+  --color-muted: #879183; /* muted sage */
+  --text: #3b2f26; /* dark text for contrast */
+  --muted-text: #6b6b63;
+  --danger: #ef4444;
+}
+
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background-color: #121212;
-  color: #f0f0f0;
+  background-color: var(--color-bg);
+  color: var(--text);
 }
 
 a {
-  color: #2563eb;
+  color: var(--color-primary);
   text-decoration: none;
 }
 
@@ -16,18 +27,20 @@ a:hover {
 }
 
 .panel {
-  background-color: #1e1e1e;
+  background-color: var(--color-surface);
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 18px rgba(92,84,73,0.08);
 }
 
 .panel h3 {
   margin-top: 0;
   margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-  color: #f9f9f9;
+  font-size: 1.25rem;
+  color: var(--color-primary);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: 600;
 }
 
 /* --- Layout --- */
@@ -38,9 +51,9 @@ a:hover {
 
 .sidebar {
   width: 240px;
-  background-color: #1a1a1a;
+  background-color: var(--color-surface);
   padding: 1rem;
-  box-shadow: 2px 0 6px rgba(0,0,0,0.4);
+  box-shadow: 2px 0 6px rgba(92,84,73,0.06);
 }
 
 .sidebar nav h3 {
@@ -87,7 +100,7 @@ a:hover {
 .date-navigator button {
   background: none;
   border: none;
-  color: #fff;
+  color: var(--text);
   font-size: 1.2rem;
   cursor: pointer;
   padding: 0.3rem 0.6rem;
@@ -95,7 +108,7 @@ a:hover {
 }
 
 .date-navigator button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(0,0,0,0.03);
 }
 
 .current-date {
@@ -127,17 +140,16 @@ a:hover {
   flex-wrap: wrap;
   gap: 0.25rem;
 }
-
 .tag-chip {
-  background-color: #2563eb;
+  background-color: var(--color-accent);
   padding: 0.15rem 0.4rem;
   border-radius: 6px;
   font-size: 0.75rem;
-  color: white;
+  color: var(--text);
 }
 
 .add-tag-button {
-  background-color: #3b82f6;
+  background-color: var(--color-primary);
   border: none;
   padding: 0.25rem 0.5rem;
   border-radius: 6px;
@@ -147,12 +159,12 @@ a:hover {
 }
 
 .add-tag-button:hover {
-  background-color: #2563eb;
+  background-color: #58473a;
 }
 
 /* --- OnThisDayPanel --- */
 .on-this-day-panel .on-this-day-entry {
-  background-color: #2a2a2a;
+  background-color: var(--color-bg);
   border-radius: 8px;
   padding: 0.5rem;
   margin-bottom: 0.5rem;
@@ -160,7 +172,7 @@ a:hover {
 }
 
 .on-this-day-panel .on-this-day-entry:hover {
-  background-color: #3b3b3b;
+  background-color: var(--color-surface);
 }
 
 /* --- StatsPanel --- */
@@ -171,16 +183,18 @@ a:hover {
 }
 
 .stat-card {
-  background-color: #2a2a2a;
-  padding: 0.5rem;
-  border-radius: 8px;
+  background-color: var(--color-bg);
+  padding: 0.75rem;
+  border-radius: 10px;
   text-align: center;
+  border: 1px solid rgba(0,0,0,0.04);
 }
 
 /* --- QuotePanel --- */
 .quote-text {
   font-style: italic;
-  color: #d1d5db;
+  color: var(--muted-text);
+  font-size: 1.05rem;
 }
 
 /* --- MoodPanel --- */
@@ -193,7 +207,7 @@ a:hover {
 .mood-panel { position: relative; }
 
 .mood-button {
-  background-color: #2563eb;
+  background-color: var(--color-primary);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -203,7 +217,7 @@ a:hover {
 }
 
 .mood-button:hover {
-  background-color: #1d4ed8;
+  background-color: #58473a;
 }
 
 .mood-row {
@@ -216,20 +230,20 @@ a:hover {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: #2a2a2a;
-  border: none;
+  background: var(--color-bg);
+  border: 1px solid rgba(0,0,0,0.04);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #f0f0f0;
+  color: var(--text);
 }
 
 .mood-face svg { width: 28px; height: 28px; }
 
 .mood-face.selected {
-  box-shadow: 0 0 0 3px rgba(96,165,250,0.18), 0 6px 18px rgba(0,0,0,0.5);
-  background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%);
+  box-shadow: 0 0 0 3px rgba(107,90,72,0.12), 0 6px 18px rgba(0,0,0,0.08);
+  background: linear-gradient(180deg, var(--color-primary) 0%, #4f3f33 100%);
   color: white;
 }
 
@@ -249,22 +263,22 @@ a:hover {
   position: absolute;
   right: 10px;
   bottom: 10px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.04);
-  color: #cbd5e1;
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.04);
+  color: var(--muted-text);
   padding: 6px 8px;
   border-radius: 6px;
   font-size: 0.85rem;
   cursor: pointer;
 }
-.clear-mood:hover { background: rgba(255,255,255,0.04); }
+.clear-mood:hover { background: rgba(0,0,0,0.02); }
 
 /* --- CalendarPanel --- */
 .calendar-panel {
   padding: 1rem;
-  background-color: #1e1e1e;
+  background-color: var(--color-surface);
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 8px rgba(92,84,73,0.06);
 }
 
 .calendar-header {
@@ -282,14 +296,14 @@ a:hover {
 
 .calendar-header button {
   padding: 0.25rem 0.5rem;
-  background-color: #eee;
-  border: 1px solid #ccc;
+  background-color: var(--color-bg);
+  border: 1px solid rgba(0,0,0,0.06);
   border-radius: 4px;
   cursor: pointer;
 }
 
 .calendar-header button:hover {
-  background-color: #ddd;
+  background-color: var(--color-surface);
 }
 
 .calendar-header select {
@@ -322,6 +336,7 @@ a:hover {
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+  position: relative;
 }
 
 .calendar-cell.empty {
@@ -333,12 +348,36 @@ a:hover {
   background-color: #f0f0f0;
 }
 
-.calendar-cell.has-entry {
-  background-color: #dbeafe; /* Light blue for entries */
+
+/* Use a small dot indicator for days with entries rather than recoloring the whole cell */
+.calendar-cell .calendar-cell-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day-number {
+  line-height: 1;
+}
+
+.entry-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  margin-top: 6px;
+  display: block;
+}
+
+/* If the cell is selected, keep dot visible but use a high-contrast color */
+.calendar-cell.selected .entry-dot {
+  background: white;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.06) inset;
 }
 
 .calendar-cell.selected {
-  background-color: #2563eb; /* Blue */
+  background-color: var(--color-primary);
   color: white;
   font-weight: bold;
 }
@@ -350,9 +389,9 @@ button {
 
 /* --- EntryEditor --- */
 .entry-editor-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 1rem;
+  max-width: 900px;
+  margin: 2.5rem auto;
+  padding: 1.5rem;
 }
 
 .entry-editor-header {
@@ -363,11 +402,11 @@ button {
 }
 
 .back-button {
-    background: none;
-    border: none;
-    color: #0077ff;
-    font-size: 1rem;
-    cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 1rem;
+  cursor: pointer;
 }
 
 .entry-date {
@@ -397,14 +436,21 @@ button {
     font-size: 1rem;
 }
 
+.entry-content-textarea {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 1.03rem;
+  line-height: 1.8;
+  padding: 0.75rem;
+}
+
 .save-entry-button {
-    background-color: #0077ff;
-    color: white;
-    padding: 0.7rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
+  background-color: var(--color-primary);
+  color: white;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
 }
 
 .save-entry-button:disabled {
@@ -429,9 +475,8 @@ button {
 }
 
 .edit-entry-button,
-.delete-entry-button,
 .cancel-entry-button {
-  background-color: #2563eb;
+  background-color: var(--color-primary);
   border: none;
   color: white;
   padding: 0.45rem 0.75rem;
@@ -441,13 +486,13 @@ button {
 }
 
 .delete-entry-button {
-  background-color: #ef4444;
+  background-color: var(--danger);
 }
 
-.edit-entry-button:hover { background-color: #1d4ed8; }
+.edit-entry-button:hover { background-color: #58473a; }
 .delete-entry-button:hover { background-color: #dc2626; }
-.cancel-entry-button { background-color: #6b7280; }
-.cancel-entry-button:hover { background-color: #4b5563; }
+.cancel-entry-button { background-color: var(--muted-text); }
+.cancel-entry-button:hover { background-color: #5b5b54; }
 
 .entry-meta { display: flex; gap: 1rem; align-items: center; }
 .entry-mood { font-weight: 600; color: #f59e0b; }
@@ -455,10 +500,10 @@ button {
 
 .entry-image img { max-width: 100%; border-radius: 8px; }
 
-/* Slightly brighter input fields in dark theme */
+/* Input fields styled for cream palette */
 .entry-title-input, .entry-content-textarea {
-  background-color: #111827;
-  border: 1px solid #2b3440;
-  color: #f8fafc;
+  background-color: var(--color-bg);
+  border: 1px solid rgba(0,0,0,0.06);
+  color: var(--text);
 }
 

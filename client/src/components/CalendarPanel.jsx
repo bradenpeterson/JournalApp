@@ -122,7 +122,10 @@ export default function CalendarPanel({ selectedDate, onDateChange }) {
               className={`calendar-cell ${isToday ? "selected" : ""} ${hasEntry ? "has-entry" : ""}`}
               onClick={() => handleDayClick(day)}
             >
-              {day}
+              <div className="calendar-cell-content">
+                <span className="calendar-day-number">{day}</span>
+                {hasEntry && <span className="entry-dot" aria-hidden="true" />}
+              </div>
             </div>
           );
         })}
