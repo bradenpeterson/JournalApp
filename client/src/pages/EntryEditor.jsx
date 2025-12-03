@@ -39,7 +39,7 @@ export default function EntryEditor() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const handleBack = () => navigate("/"); // go back to dashboard
+    const handleBack = () => navigate(`/?date=${entryDate}`); // go back to dashboard with the edited date selected
 
     const handleSubmit = async (e) => {
         e.preventDefault();
