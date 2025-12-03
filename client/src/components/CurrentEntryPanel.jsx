@@ -59,7 +59,7 @@ export default function CurrentEntryPanel({ selectedDate, tagRefreshKey }) {
   // Helper: get a short preview of the content
   function getPreviewText(entry) {
     if (!entry || !entry.content) return "";
-    const maxLen = 150;
+    const maxLen = 300;
     if (entry.content.length <= maxLen) return entry.content;
     return entry.content.slice(0, maxLen) + "…";
   }
@@ -78,7 +78,7 @@ export default function CurrentEntryPanel({ selectedDate, tagRefreshKey }) {
       style={{ position: 'relative' }}
     >
       <div className="current-entry-header">
-        <h2>Current Entry</h2>
+        <h3>Current Entry</h3>
       </div>
 
       <div className="current-entry-body">
@@ -88,7 +88,7 @@ export default function CurrentEntryPanel({ selectedDate, tagRefreshKey }) {
           <p className="error-text">{error}</p>
         ) : entry ? (
           <>
-            <h3 className="current-entry-title">{entry.title || "(No title)"}</h3>
+            <h4 className="current-entry-title">{entry.title || "(No title)"}</h4>
             <p className="current-entry-preview">{getPreviewText(entry) || "No content yet. Click to edit."}</p>
           </>
         ) : (

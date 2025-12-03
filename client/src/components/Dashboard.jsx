@@ -27,18 +27,28 @@ export default function Dashboard() {
     return (
         <div className="dashboard-container">
             <Sidebar />
-            <div className="left-main-content">
-                <DateNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} onTagApplied={() => setTagRefreshKey(k => k + 1)} />
-                <CurrentEntryPanel selectedDate={selectedDate} tagRefreshKey={tagRefreshKey} />
-                <OnThisDayPanel selectedDate={selectedDate} />
-                <StatsPanel />
+            <div className="main-area">
+                <div className="top-row">
+                    <div className="date-nav-area">
+                        <DateNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} onTagApplied={() => setTagRefreshKey(k => k + 1)} />
+                    </div>
+                    <div className="quote-area">
+                        <QuotePanel selectedDate={selectedDate} />
+                    </div>
+                </div>
+
+                <div className="content-columns">
+                    <div className="left-main-content">
+                        <CurrentEntryPanel selectedDate={selectedDate} tagRefreshKey={tagRefreshKey} />
+                        <OnThisDayPanel selectedDate={selectedDate} />
+                        <StatsPanel />
+                    </div>
+                    <div className="right-main-content">
+                        <MoodPanel selectedDate={selectedDate} />
+                        <Calendar selectedDate={selectedDate} onDateChange={setSelectedDate} />
+                    </div>
+                </div>
             </div>
-            <div className="right-main-content">
-                <QuotePanel selectedDate={selectedDate} />
-                <MoodPanel selectedDate={selectedDate} />
-                <Calendar selectedDate={selectedDate} onDateChange={setSelectedDate} />
-            </div>
-            
         </div>
     );
 }
