@@ -646,23 +646,36 @@ button {
 }
 
 .entry-editor-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
 }
 
 .back-button {
   background: none;
   border: none;
   color: var(--color-primary);
-  font-size: 1rem;
+  font-size: 1.1rem;
   cursor: pointer;
+}
+
+.back-button {
+  min-width: 76px;
+  text-align: left;
 }
 
 .entry-date {
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    flex: 1 1 auto;
+    text-align: center;
+}
+
+.entry-editor-actions {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
 }
 
 .entry-editor-form {
@@ -692,6 +705,15 @@ button {
   font-size: 1.03rem;
   line-height: 1.8;
   padding: 0.75rem;
+}
+
+.entry-content pre {
+  background-color: rgba(27,31,35,0.05);
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  padding: 1rem;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .save-entry-button {
@@ -737,11 +759,40 @@ button {
 }
 
 .delete-entry-button {
-  background-color: var(--danger);
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid rgba(107,90,72,0.06);
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
 }
 
 .edit-entry-button:hover { background-color: #58473a; }
-.delete-entry-button:hover { background-color: #dc2626; }
+.delete-entry-button:hover { background-color: rgba(107,90,72,0.06); color: var(--color-primary); border-color: rgba(107,90,72,0.18); }
+.delete-entry-button:focus { outline: none; box-shadow: 0 0 0 4px rgba(107,90,72,0.10); }
+
+.edit-entry-button {
+  /* icon-only variant: make square and use primary color */
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid rgba(107,90,72,0.06);
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.edit-entry-button:hover { background-color: rgba(107,90,72,0.06); color: var(--color-primary); border-color: rgba(107,90,72,0.12); }
+.edit-entry-button:focus { outline: none; box-shadow: 0 0 0 4px rgba(107,90,72,0.10); }
 .cancel-entry-button { background-color: var(--muted-text); }
 .cancel-entry-button:hover { background-color: #5b5b54; }
 

@@ -39,7 +39,21 @@ export default function EntryEditor() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const handleBack = () => navigate(`/?date=${entryDate}`); // go back to dashboard with the edited date selected
+    const handleBack = () => {
+        // If the user is editing an existing entry, cancel the edit and show
+        // the read-only view for that entry instead of navigating back to dashboard.
+        if (id && isEditing) {
+            // restore fields from the saved `entry` (discard unsaved edits)
+            setTitle(entry?.title || '');
+            setContent(entry?.content || '');
+            setTags(entry?.tags || []);
+            setIsEditing(false);
+            return;
+        }
+
+        // Otherwise, go back to dashboard with the selected date.
+        navigate(`/?date=${entryDate}`);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -109,6 +123,23 @@ export default function EntryEditor() {
             <header className="entry-editor-header">
                 <button onClick={handleBack} className="back-button">← Back</button>
                 <div className="entry-date">{formatDate(entryDate)}</div>
+
+                                {id && !isEditing && (
+                                        <div className="entry-editor-actions">
+                                                <button onClick={() => setIsEditing(true)} className="edit-entry-button" aria-label="Edit entry" title="Edit entry">
+                                                    <svg width="25" height="25" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" />
+                                                        <path d="M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                                    </svg>
+                                                </button>
+                                                <button onClick={handleDelete} className="delete-entry-button" aria-label="Delete entry" title="Delete entry">
+                                                    <svg width="25" height="25" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z" />
+                                                        <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                                                    </svg>
+                                                </button>
+                                        </div>
+                                )}
             </header>
 
             {id && !isEditing ? (

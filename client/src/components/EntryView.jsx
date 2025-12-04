@@ -3,11 +3,7 @@ import React from 'react';
 export default function EntryView({ entry, onEdit, onDelete }) {
   return (
     <div className="entry-readonly">
-      <div className="entry-actions">
-        <button onClick={onEdit} className="edit-entry-button">Edit</button>
-        <button onClick={onDelete} className="delete-entry-button">Delete</button>
-      </div>
-
+      
       <h2>{entry?.title || '(No title)'}</h2>
       <div className="entry-meta">
         {entry?.tags && entry.tags.length > 0 && (
