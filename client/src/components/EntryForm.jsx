@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { listTags, createTag } from '../api/tag';
 
 export default function EntryForm({ title, content, setTitle, setContent, onCancel, onSave, loading, tags, setTags }) {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -52,6 +53,22 @@ export default function EntryForm({ title, content, setTitle, setContent, onCanc
     setTags(prev => (prev || []).filter(t => t.id !== tag.id || t.name !== tag.name));
   }
 
+  // autosize textarea whenever `content` changes
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    // preserve current scroll position to avoid jumping as we resize
+    const prevScrollY = window.scrollY || window.pageYOffset;
+    // reset height to let scrollHeight shrink when content is removed
+    el.style.height = 'auto';
+    // set to scrollHeight so the textarea expands to fit content
+    el.style.height = `${el.scrollHeight}px`;
+    // restore scroll after browser layout so viewport doesn't jump
+    requestAnimationFrame(() => {
+      window.scrollTo(0, prevScrollY);
+    });
+  }, [content]);
+
   return (
     <form onSubmit={onSave} className="entry-editor-form">
       <div className="entry-tags-editor">
@@ -98,6 +115,7 @@ export default function EntryForm({ title, content, setTitle, setContent, onCanc
         placeholder="Write your entry here..."
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        ref={textareaRef}
         className="entry-content-textarea"
       />
 
@@ -110,3 +128,6 @@ export default function EntryForm({ title, content, setTitle, setContent, onCanc
     </form>
   );
 }
+
+// autosize handled inside the component via the effect above
+
