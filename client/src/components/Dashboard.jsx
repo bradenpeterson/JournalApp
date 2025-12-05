@@ -22,11 +22,11 @@ export default function Dashboard() {
     const initialDate = searchParams.get('date') || localISODate();
     const [selectedDate, setSelectedDate] = useState(initialDate);
     const [tagRefreshKey, setTagRefreshKey] = useState(0);
-    
+    const [sidebarOpen, setSidebarOpen] = useState(true);
 
     return (
         <div className="dashboard-container">
-            <Sidebar />
+            <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
             <div className="main-area">
                 <div className="top-row">
                     <div className="date-nav-area">
