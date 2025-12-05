@@ -886,3 +886,117 @@ button {
   font-weight: 400;
 }
 
+/* --- Authentication Pages (Sign In / Sign Up) --- */
+.sign-in-container,
+.sign-up-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg);
+  padding: 2rem 1rem;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.sign-in-card,
+.sign-up-card {
+  background-color: var(--color-surface);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(92,84,73,0.12);
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.sign-in-card h1,
+.sign-up-card h1 {
+  margin: 0 0 1.5rem 0;
+  font-size: 2rem;
+  color: var(--color-primary);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: 600;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background-color: var(--color-bg);
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: rgba(107,90,72,0.2);
+  box-shadow: 0 0 0 3px rgba(107,90,72,0.08);
+}
+
+.sign-in-button,
+.sign-up-button {
+  width: 100%;
+  padding: 0.85rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms ease;
+  margin-top: 0.5rem;
+}
+
+.sign-in-button:hover,
+.sign-up-button:hover {
+  background-color: #58473a;
+}
+
+.sign-in-button:disabled,
+.sign-up-button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+.sign-up-link,
+.sign-in-link {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--muted-text);
+}
+
+.sign-up-link a,
+.sign-in-link a {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.sign-up-link a:hover,
+.sign-in-link a:hover {
+  text-decoration: underline;
+}
+
