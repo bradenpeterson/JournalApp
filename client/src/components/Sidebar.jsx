@@ -31,7 +31,7 @@ export default function Sidebar({ isOpen, onToggle }) {
       </button>
       <aside className={`sidebar ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         <nav>
-          <h3>Journal</h3>
+          <h3 className="sidebar-title">Journal</h3>
           <ul>
             <li><Link to="/">Home</Link></li>
           </ul>

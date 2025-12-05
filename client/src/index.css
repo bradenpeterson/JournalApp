@@ -133,12 +133,12 @@ a:hover {
   }
 }
 
-.sidebar nav h3 {
+.sidebar-title {
   margin-top: 0;
   margin-bottom: 1rem;
   color: var(--color-primary);
   font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 1.5rem;
+  font-size: 2rem;
 }
 
 .sidebar nav ul {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import CurrentEntryPanel from "./CurrentEntryPanel";
@@ -22,7 +22,17 @@ export default function Dashboard() {
     const initialDate = searchParams.get('date') || localISODate();
     const [selectedDate, setSelectedDate] = useState(initialDate);
     const [tagRefreshKey, setTagRefreshKey] = useState(0);
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    
+    // Initialize sidebar state from localStorage, default to true
+    const [sidebarOpen, setSidebarOpen] = useState(() => {
+        const saved = localStorage.getItem('sidebarOpen');
+        return saved !== null ? JSON.parse(saved) : true;
+    });
+
+    // Persist sidebar state to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('sidebarOpen', JSON.stringify(sidebarOpen));
+    }, [sidebarOpen]);
 
     return (
         <div className="dashboard-container">
