@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { localISODate } from "../utils/dateHelpers";
 import Sidebar from "./Sidebar";
 import CurrentEntryPanel from "./CurrentEntryPanel";
 import OnThisDayPanel from "./OnThisDayPanel";
@@ -10,14 +11,6 @@ import Calendar from "./CalendarPanel";
 import DateNavigator from "./DateNavigator";
 
 export default function Dashboard() {
-    // Use local date (YYYY-MM-DD) to avoid timezone differences with toISOString
-    function localISODate(d = new Date()) {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${y}-${m}-${day}`;
-    }
-
     const [searchParams] = useSearchParams();
     const initialDate = searchParams.get('date') || localISODate();
     const [selectedDate, setSelectedDate] = useState(initialDate);

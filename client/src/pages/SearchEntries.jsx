@@ -2,7 +2,16 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { listEntries } from "../api/entries";
 import { listTags } from "../api/tag";
+import { formatDate } from "../utils/dateHelpers";
 import Sidebar from "../components/Sidebar";
+
+const MOOD_OPTIONS = [
+  { value: '1', label: 'Very sad' },
+  { value: '2', label: 'Sad' },
+  { value: '3', label: 'Neutral' },
+  { value: '4', label: 'Happy' },
+  { value: '5', label: 'Very happy' },
+];
 
 export default function SearchEntries() {
   const [entries, setEntries] = useState([]);
@@ -93,11 +102,6 @@ export default function SearchEntries() {
     );
   };
 
-  function formatDate(dateStr) {
-    const date = new Date(dateStr + 'T00:00:00');
-    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-  }
-
   function getPreview(content, maxLen = 200) {
     if (!content) return "";
     if (content.length <= maxLen) return content;
@@ -110,14 +114,6 @@ export default function SearchEntries() {
     (endDate ? 1 : 0) +
     (selectedTags.length > 0 ? 1 : 0) +
     (selectedMood ? 1 : 0);
-
-  const moodOptions = [
-    { value: '1', label: 'Very sad' },
-    { value: '2', label: 'Sad' },
-    { value: '3', label: 'Neutral' },
-    { value: '4', label: 'Happy' },
-    { value: '5', label: 'Very happy' },
-  ];
 
   return (
     <div className="dashboard-container">
@@ -189,7 +185,7 @@ export default function SearchEntries() {
                   onChange={(e) => setSelectedMood(e.target.value)}
                 >
                   <option value="">All moods</option>
-                  {moodOptions.map(mood => (
+                  {MOOD_OPTIONS.map(mood => (
                     <option key={mood.value} value={mood.value}>{mood.label}</option>
                   ))}
                 </select>

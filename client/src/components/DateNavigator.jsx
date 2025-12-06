@@ -1,20 +1,6 @@
+import { parseISO, formatDate, localISODate } from "../utils/dateHelpers";
+
 export default function DateNavigator({ selectedDate, onDateChange }) {
-  // Helper to format date nicely
-  // Parse an ISO YYYY-MM-DD string into a local Date object (avoids UTC parsing)
-  function parseISO(dateStr) {
-    const [y, m, d] = (dateStr || '').split('-').map(Number);
-    return new Date(y, (m || 1) - 1, d || 1);
-  }
-
-  function formatDate(dateStr) {
-    const date = parseISO(dateStr);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  }
-
   function changeDate(days) {
     const date = parseISO(selectedDate);
     date.setDate(date.getDate() + days);

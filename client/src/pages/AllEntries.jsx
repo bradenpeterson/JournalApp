@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { listEntries } from "../api/entries";
+import { formatDate } from "../utils/dateHelpers";
 import Sidebar from "../components/Sidebar";
 
 export default function AllEntries() {
@@ -48,11 +49,6 @@ export default function AllEntries() {
       });
     return () => { cancelled = true; };
   }, [page]);
-
-  function formatDate(dateStr) {
-    const date = new Date(dateStr + 'T00:00:00');
-    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-  }
 
   function getPreview(content, maxLen = 200) {
     if (!content) return "";

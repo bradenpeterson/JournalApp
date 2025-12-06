@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { listEntries } from "../api/entries";
+import { parseISO, localISODate } from "../utils/dateHelpers";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -7,11 +8,6 @@ export default function CalendarPanel({ selectedDate, onDateChange }) {
   const today = new Date();
   // Initialize month/year from selectedDate so the calendar reflects the
   // currently selected date (helps when leaving the dashboard with a date param).
-  function parseISO(dateStr) {
-    const [y, m, d] = (dateStr || '').split('-').map(Number);
-    return new Date(y, (m || 1) - 1, d || 1);
-  }
-
   const initial = parseISO(selectedDate) || today;
   const [currentMonth, setCurrentMonth] = useState(initial.getMonth());
   const [currentYear, setCurrentYear] = useState(initial.getFullYear());

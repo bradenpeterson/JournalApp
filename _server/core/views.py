@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.conf  import settings
+from django.conf import settings
 import json
 import os
 from datetime import timedelta
@@ -8,17 +8,16 @@ from django.utils import timezone
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import JournalEntry, Tag, Mood
-from .serializers import JournalEntrySerializer, TagSerializer
-from .serializers import JournalEntrySerializer, TagSerializer, MoodSerializer
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from .models import JournalEntry, Tag, Mood
+from .serializers import JournalEntrySerializer, TagSerializer, MoodSerializer
 
 # Load manifest when server launches
 MANIFEST = {}
 if not settings.DEBUG:
-    f = open(f"{settings.BASE_DIR}/core/static/manifest.json")
-    MANIFEST = json.load(f)
+    with open(f"{settings.BASE_DIR}/core/static/manifest.json") as f:
+        MANIFEST = json.load(f)
 
 # Create your views here.
 @login_required
@@ -34,13 +33,15 @@ def index(req):
 
 
 class JournalEntryViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing journal entries with search and filtering."""
     serializer_class = JournalEntrySerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['title', 'content', 'mood', 'tags__name']
+    search_fields = ['title', 'content', 'tags__name']
     ordering_fields = ['date', 'created_at', 'updated_at']
 
     def get_queryset(self):
+        """Filter entries by user and apply optional query parameters."""
         from django.db.models import Q
         qs = JournalEntry.objects.filter(user=self.request.user)
         
@@ -77,7 +78,6 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
         # Filter by mood (via the Mood model for the same date)
         mood = self.request.query_params.get('mood')
         if mood:
-            # Get dates that have this mood, then filter entries by those dates
             mood_dates = Mood.objects.filter(user=self.request.user, mood=mood).values_list('date', flat=True)
             qs = qs.filter(date__in=mood_dates)
         
@@ -176,6 +176,7 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
     
 
 class TagViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing tags."""
     serializer_class = TagSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
@@ -190,10 +191,12 @@ class TagViewSet(viewsets.ModelViewSet):
 
 
 class MoodViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing user moods."""
     serializer_class = MoodSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        """Filter moods by user and optional date."""
         qs = Mood.objects.filter(user=self.request.user)
         date_str = self.request.query_params.get('date')
         if date_str:
