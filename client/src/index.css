@@ -61,7 +61,6 @@ a:hover {
 
 /* --- Layout --- */
 .dashboard-container {
-  display: flex;
   min-height: 100vh;
 }
 
@@ -70,7 +69,11 @@ a:hover {
   background-color: var(--color-surface);
   padding: 1rem;
   box-shadow: 2px 0 6px rgba(92,84,73,0.06);
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
   transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), width 300ms cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
 }
@@ -131,6 +134,9 @@ a:hover {
     background: rgba(0,0,0,0.3);
     z-index: 99;
   }
+  .main-area {
+    margin-left: 0 !important;
+  }
 }
 
 .sidebar-title {
@@ -185,6 +191,12 @@ a:hover {
   display: flex;
   flex-direction: column;
   padding: 1rem;
+  margin-left: 240px;
+  transition: margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-area-expanded {
+  margin-left: 0;
 }
 
 .top-row {

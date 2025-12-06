@@ -37,7 +37,7 @@ export default function Dashboard() {
     return (
         <div className="dashboard-container">
             <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="main-area">
+            <div className={`main-area ${sidebarOpen ? '' : 'main-area-expanded'}`}>
                 <div className="top-row">
                     <div className="date-nav-area">
                         <DateNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} onTagApplied={() => setTagRefreshKey(k => k + 1)} />

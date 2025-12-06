@@ -63,7 +63,7 @@ export default function AllEntries() {
   return (
     <div className="dashboard-container">
       <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      <div className="main-area">
+      <div className={`main-area ${sidebarOpen ? '' : 'main-area-expanded'}`}>
         <div className="all-entries-container">
           <h1 className="all-entries-title">All Entries</h1>
           <div className="all-entries-list">
