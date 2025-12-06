@@ -74,11 +74,12 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
             except (ValueError, AttributeError):
                 pass
         
-        # Filter by mood
+        # Filter by mood (via the Mood model for the same date)
         mood = self.request.query_params.get('mood')
         if mood:
-            # Join with Mood table and filter by mood value
-            qs = qs.filter(mood_entries__mood=mood).distinct()
+            # Get dates that have this mood, then filter entries by those dates
+            mood_dates = Mood.objects.filter(user=self.request.user, mood=mood).values_list('date', flat=True)
+            qs = qs.filter(date__in=mood_dates)
         
         # Filter by month-day (e.g., ?month_day=11-29 for Nov 29)
         month_day = self.request.query_params.get('month_day')
