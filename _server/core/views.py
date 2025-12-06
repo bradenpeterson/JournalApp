@@ -41,7 +41,44 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
     ordering_fields = ['date', 'created_at', 'updated_at']
 
     def get_queryset(self):
+        from django.db.models import Q
         qs = JournalEntry.objects.filter(user=self.request.user)
+        
+        # Keyword search across title and content
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(Q(title__icontains=search) | Q(content__icontains=search))
+        
+        # Date range filters
+        start_date = self.request.query_params.get('start_date')
+        if start_date:
+            try:
+                qs = qs.filter(date__gte=start_date)
+            except ValueError:
+                pass
+        
+        end_date = self.request.query_params.get('end_date')
+        if end_date:
+            try:
+                qs = qs.filter(date__lte=end_date)
+            except ValueError:
+                pass
+        
+        # Filter by tags (comma-separated IDs)
+        tags = self.request.query_params.get('tags')
+        if tags:
+            try:
+                tag_ids = [int(tid.strip()) for tid in tags.split(',') if tid.strip()]
+                if tag_ids:
+                    qs = qs.filter(tags__id__in=tag_ids).distinct()
+            except (ValueError, AttributeError):
+                pass
+        
+        # Filter by mood
+        mood = self.request.query_params.get('mood')
+        if mood:
+            # Join with Mood table and filter by mood value
+            qs = qs.filter(mood_entries__mood=mood).distinct()
         
         # Filter by month-day (e.g., ?month_day=11-29 for Nov 29)
         month_day = self.request.query_params.get('month_day')
@@ -52,6 +89,7 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
             except (ValueError, AttributeError):
                 pass
         
+        # Filter by specific date
         date_str = self.request.query_params.get('date')
         if date_str:
             try:
@@ -59,7 +97,7 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
             except ValueError:
                 pass
 
-        return qs
+        return qs.order_by('-date')
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

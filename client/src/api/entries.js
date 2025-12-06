@@ -1,9 +1,13 @@
 import { request } from './request'
 
-export const listEntries = ({ page = 1, search = '', date } = {}) => {
+export const listEntries = ({ page = 1, search = '', date, start_date, end_date, tags, mood } = {}) => {
   const params = { page }
   if (search) params.search = search
   if (date) params.date = date
+  if (start_date) params.start_date = start_date
+  if (end_date) params.end_date = end_date
+  if (tags) params.tags = tags
+  if (mood) params.mood = mood
   return request('/api/entries/', { params })
 }
 

@@ -5,6 +5,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import EntryEditor from "./pages/EntryEditor";
 import AllEntries from "./pages/AllEntries";
+import SearchEntries from "./pages/SearchEntries";
 
 function ProtectedRoute({ children }) {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -38,8 +39,9 @@ export default function App() {
             <Route path="/registration/sign_up" element={<SignUp />} />
             <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/entries" element={<ProtectedRoute><AllEntries /></ProtectedRoute>} />
-                <Route path="/entries/:id/edit" element={<ProtectedRoute><EntryEditor /></ProtectedRoute>} />
-                <Route path="/entries/new" element={<ProtectedRoute><EntryEditor /></ProtectedRoute>} />
+            <Route path="/search" element={<ProtectedRoute><SearchEntries /></ProtectedRoute>} />
+            <Route path="/entries/:id/edit" element={<ProtectedRoute><EntryEditor /></ProtectedRoute>} />
+            <Route path="/entries/new" element={<ProtectedRoute><EntryEditor /></ProtectedRoute>} />
         </Routes>
     );
 }

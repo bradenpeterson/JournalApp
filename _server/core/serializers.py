@@ -18,9 +18,9 @@ class JournalEntrySerializer(serializers.ModelSerializer):
         model = JournalEntry
         fields = [
             'id', 'user', 'title', 'content', 'date', 'created_at', 'updated_at',
-            'is_private', 'tags', 'image', 'mood'
+            'is_private', 'tags', 'image', 'mood', 'word_count'
         ]
-        read_only_fields = ['user', 'created_at', 'updated_at']
+        read_only_fields = ['user', 'created_at', 'updated_at', 'word_count']
 
     def to_representation(self, instance):
         """Return nested tag objects for reading, but accept IDs for writing."""
