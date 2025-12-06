@@ -41,7 +41,7 @@ export default function EntryEditor() {
 
     const handleBack = () => {
         // If the user is editing an existing entry, cancel the edit and show
-        // the read-only view for that entry instead of navigating back to dashboard.
+        // the read-only view for that entry instead of navigating to a different page.
         if (id && isEditing) {
             // restore fields from the saved `entry` (discard unsaved edits)
             setTitle(entry?.title || '');
@@ -51,8 +51,8 @@ export default function EntryEditor() {
             return;
         }
 
-        // Otherwise, go back to dashboard with the selected date.
-        navigate(`/?date=${entryDate}`);
+        // Otherwise, navigate back to the previous page.
+        navigate(-1);
     };
 
     const handleSubmit = async (e) => {
