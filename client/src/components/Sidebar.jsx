@@ -33,9 +33,9 @@ export default function Sidebar({ isOpen, onToggle }) {
         <nav>
           <h3 className="sidebar-title">Journal</h3>
           <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/search">Search</Link></li>
-            <li><Link to="/entries">All Entries</Link></li>
+            <li className="sidebar-link"><Link to="/">Home</Link></li>
+            <li className="sidebar-link"><Link to="/search">Search</Link></li>
+            <li className="sidebar-link"><Link to="/entries">All Entries</Link></li>
           </ul>
           <button onClick={handleLogout} className="logout-button">
             Log Out

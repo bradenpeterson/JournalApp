@@ -141,48 +141,70 @@ a:hover {
 
 .sidebar-title {
   margin-top: 0;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: var(--color-primary);
   font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 2.5rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
 }
 
 .sidebar nav ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .sidebar nav ul li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
 }
 
 .sidebar nav ul li a {
+  display: block;
   color: var(--text);
   font-size: 0.95rem;
-  transition: color 120ms ease;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  transition: background 120ms ease, color 120ms ease;
+  text-decoration: none;
 }
 
 .sidebar nav ul li a:hover {
+  background: rgba(107,90,72,0.08);
   color: var(--color-primary);
 }
 
+.sidebar nav ul li a:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
 .logout-button {
-  margin-top: 2rem;
+  margin-top: auto;
   width: 100%;
-  padding: 0.6rem;
+  padding: 0.7rem 0.75rem;
   background: transparent;
-  border: 1px solid rgba(0,0,0,0.06);
+  border: 1px solid rgba(107,90,72,0.15);
   color: var(--text);
   border-radius: 8px;
   cursor: pointer;
-  font-size: 0.95rem;
-  transition: background 120ms ease, color 120ms ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 120ms ease;
 }
 
 .logout-button:hover {
   background: rgba(107,90,72,0.06);
   color: var(--color-primary);
+  border-color: rgba(107,90,72,0.25);
+}
+
+.logout-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
 }
 
 /* Main area contains top row and two-column content */
@@ -232,6 +254,7 @@ a:hover {
 .sidebar nav h3 {
   margin-top: 0;
   margin-bottom: 1rem;
+  font-size: 2.5rem;
 }
 
 .sidebar nav ul {
