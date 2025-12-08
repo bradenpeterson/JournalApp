@@ -31,13 +31,6 @@ A personal journaling web application built with React and Django. Write daily e
 
 ## Installation
 
-### Prerequisites
-- Python 3.11 or higher
-- Node.js 18+ and npm
-- Poetry (Python dependency manager)
-
-### Setup
-
 1. **Clone the repository**
    ```bash
    git clone <repository-url>

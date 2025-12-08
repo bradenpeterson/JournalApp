@@ -1132,6 +1132,7 @@ button {
 /* --- All Entries Page --- */
 .all-entries-container {
   max-width: 900px;
+  min-width: 50vw;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
@@ -1142,6 +1143,7 @@ button {
   color: var(--color-primary);
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-weight: 600;
+  text-align: center;
 }
 
 .all-entries-list {
@@ -1225,6 +1227,7 @@ button {
 /* --- Search Page --- */
 .search-container {
   max-width: 900px;
+  min-width: 50vw;
   margin: 0 auto;
   padding: 2rem 1rem;
 }
