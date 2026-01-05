@@ -1,49 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Dashboard from "./components/Dashboard";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import EntryEditor from "./pages/EntryEditor";
+import AllEntries from "./pages/AllEntries";
+import SearchEntries from "./pages/SearchEntries";
 
-function App() {
-  const [count, setCount] = useState(0)
+function ProtectedRoute({ children }) {
+    const [isAuthenticated, setIsAuthenticated] = useState(null);
 
-  async function logout() {
-    const res = await fetch("/registration/logout/", {
-      credentials: "same-origin", // include cookies!
-    });
+    useEffect(() => {
+        // Check if user is authenticated by trying to fetch entries
+        fetch('/api/entries/?page=1', { credentials: 'include' })
+            .then(response => {
+                if (response.ok) {
+                    setIsAuthenticated(true);
+                } else if (response.status === 403 || response.status === 401) {
+                    setIsAuthenticated(false);
+                } else {
+                    setIsAuthenticated(false);
+                }
+            })
+            .catch(() => setIsAuthenticated(false));
+    }, []);
 
-    if (res.ok) {
-      // navigate away from the single page app!
-      window.location = "/registration/sign_in/";
-    } else {
-      // handle logout failed!
+    if (isAuthenticated === null) {
+        return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>;
     }
-  }
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <button onClick={logout}>Logout</button>
-    </>
-  )
+    return isAuthenticated ? children : <Navigate to="/registration/sign_in" replace />;
 }
 
-export default App;
+export default function App() {
+    return (
+        <Routes>
+            <Route path="/registration/sign_in" element={<SignIn />} />
+            <Route path="/registration/sign_up" element={<SignUp />} />
+            <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/entries" element={<ProtectedRoute><AllEntries /></ProtectedRoute>} />
+            <Route path="/search" element={<ProtectedRoute><SearchEntries /></ProtectedRoute>} />
+            <Route path="/entries/:id/edit" element={<ProtectedRoute><EntryEditor /></ProtectedRoute>} />
+            <Route path="/entries/new" element={<ProtectedRoute><EntryEditor /></ProtectedRoute>} />
+        </Routes>
+    );
+}
