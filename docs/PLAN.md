@@ -55,11 +55,11 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 ## Phase 2 — Core Journaling
 
 ### 2.1 Entries Table Migration
-- [ ] Run the `entries` table migration in Supabase:
-  - [ ] `id`, `user_id`, `title`, `body` (jsonb), `body_text`, `word_count`, `created_at`, `updated_at`, `fts` (generated tsvector)
-  - [ ] RLS policy: allow all operations where the JWT sub matches the `clerk_id` of the row's `user_id`
-  - [ ] `updated_at` trigger that fires on every UPDATE
-  - [ ] GIN index on `fts`, B-tree index on `user_id`
+- [x] Run the `entries` table migration in Supabase:
+  - [x] `id`, `user_id`, `title`, `body` (jsonb), `body_text`, `word_count`, `created_at`, `updated_at`, `fts` (generated tsvector)
+  - [x] RLS policy: allow all operations where the JWT sub matches the `clerk_id` of the row's `user_id`
+  - [x] `updated_at` trigger that fires on every UPDATE
+  - [x] GIN index on `fts`, B-tree index on `user_id`
 
 ### 2.2 Entries API Routes
 - [ ] Create `app/api/entries/route.ts`:
