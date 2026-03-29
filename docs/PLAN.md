@@ -34,8 +34,8 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 
 ### 1.5 Proxy / Clerk middleware
 - [x] Create `proxy.ts` at the project root using `clerkMiddleware()` (this project uses `proxy.ts` per Next.js / Clerk conventions for this repo — not `middleware.ts`)
-- [ ] Protect all routes under `/(app)/`
-- [ ] Mark `/sign-in`, `/sign-up`, and `/api/webhooks` as public
+- [x] Protect all routes under `/(app)/` (anything not in the public allowlist — URLs like `/dashboard` from `app/(app)/...` require auth)
+- [x] Mark `/sign-in`, `/sign-up`, and `/api/webhooks` as public
 
 ### 1.6 Clerk Webhook
 - [x] Use `verifyWebhook()` from `@clerk/nextjs/webhooks` to verify the signature (prefer this over hand-rolled Svix; add `svix` explicitly only if your lockfile does not already include it as a transitive dependency)
