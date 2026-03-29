@@ -27,10 +27,10 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Create sign-in and sign-up pages using Clerk's hosted components at `app/(auth)/sign-in` and `app/(auth)/sign-up`
 
 ### 1.4 Clerk + Supabase Integration
-- [ ] In the Clerk dashboard go to the Supabase setup page and enable the integration — this adds the `role: authenticated` claim to all Clerk JWTs
-- [ ] In Supabase dashboard go to Authentication > Third Party Auth and add Clerk as a provider using your Clerk domain
-- [ ] Create a server-side Supabase client in `lib/db/supabase-server.ts` that passes Clerk's session token via the `accessToken` option
-- [ ] Create a client-side Supabase hook in `lib/db/supabase-client.ts` using `useSession()` from Clerk
+- [x] In the Clerk dashboard go to the Supabase setup page and enable the integration — this adds the `role: authenticated` claim to all Clerk JWTs
+- [x] In Supabase dashboard go to Authentication > Third Party Auth and add Clerk as a provider using your Clerk domain
+- [x] Create a server-side Supabase client in `lib/db/supabase-server.ts` that passes Clerk's session token via the `accessToken` option
+- [x] Create a client-side Supabase hook in `lib/db/supabase-client.ts` using `useSession()` from Clerk
 
 ### 1.5 Proxy / Clerk middleware
 - [x] Create `proxy.ts` at the project root using `clerkMiddleware()` (this project uses `proxy.ts` per Next.js / Clerk conventions for this repo — not `middleware.ts`)
