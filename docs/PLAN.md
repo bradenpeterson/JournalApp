@@ -24,7 +24,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Create a Clerk application
 - [x] Install `@clerk/nextjs` and add publishable/secret keys to `.env.local`
 - [x] Wrap the root layout in `ClerkProvider`
-- [ ] Create sign-in and sign-up pages using Clerk's hosted components at `app/(auth)/sign-in` and `app/(auth)/sign-up`
+- [x] Create sign-in and sign-up pages using Clerk's hosted components at `app/(auth)/sign-in` and `app/(auth)/sign-up`
 
 ### 1.4 Clerk + Supabase Integration
 - [ ] In the Clerk dashboard go to the Supabase setup page and enable the integration — this adds the `role: authenticated` claim to all Clerk JWTs
