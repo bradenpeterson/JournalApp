@@ -42,13 +42,13 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Create the webhook handler at `app/api/webhooks/clerk/route.ts`
 - [x] On `user.created` event, upsert a row into the Supabase `users` table using the service role client
 - [x] Register the endpoint in the Clerk dashboard, subscribe to `user.created`, copy the signing secret into `.env.local` — use the **exact variable name** Clerk shows (e.g. `CLERK_WEBHOOK_SIGNING_SECRET` or `CLERK_WEBHOOK_SECRET` per [journal-lowlevel.md](journal-lowlevel.md)); it must match your code and deployment env
-- [ ] Use ngrok (`ngrok http 3000`) for local testing — update to Railway URL once deployed
+- [x] Use ngrok (`ngrok http 3000`) for local testing — update to Railway URL once deployed
 
 ### 1.7 Verification
-- [ ] Sign up as a test user
+- [x] Sign up as a test user
 - [x] Confirm a row appears in the Supabase `users` table with the correct `clerk_id` and `email`
-- [ ] Confirm that protected routes redirect to sign-in when unauthenticated
-- [ ] Confirm that sign-in redirects back to the app correctly
+- [x] Confirm that protected routes redirect to sign-in when unauthenticated
+- [x] Confirm that sign-in redirects back to the app correctly
 
 ---
 
