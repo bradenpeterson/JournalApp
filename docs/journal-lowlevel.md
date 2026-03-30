@@ -377,27 +377,31 @@ is created --- never in a client-side flow.
 **3.3 Getting the Supabase User ID**
 
 Server components and API routes call auth() from \@clerk/nextjs/server
-to get the Clerk userId. This is then used to look up the internal
-Supabase user.id for all database queries.
+to get the Clerk userId. User-facing handlers build a Supabase client with
+`createSupabaseServerClient()` (anon key + Clerk JWT in `accessToken`) so
+RLS applies, then look up internal `users.id` for inserts and any code
+that needs the UUID explicitly:
 
-> // lib/db/getUser.ts
+> // lib/db/getUser.ts (pattern)
 >
-> export async function getSupabaseUser(clerkId: string) {
+> export async function getSupabaseUserId(supabase, clerkUserId: string) {
 >
 > const { data } = await supabase
 >
-> .from(\'users\').select(\'id\').eq(\'clerk_id\', clerkId).single();
+> .from(\'users\').select(\'id\').eq(\'clerk_id\', clerkUserId).maybeSingle();
 >
-> return data;
+> return data?.id ?? null;
 >
 > }
 
 **4. API Routes**
 
 All API routes live under /app/api and are Next.js Route Handlers. Every
-route calls auth() at the top and returns 401 if no session exists. The
-Supabase service role client is used server-side so RLS does not
-interfere --- auth is already enforced by Clerk.
+route calls auth() at the top and returns 401 if no session exists.
+User-owned data uses the **JWT Supabase server client** (`lib/db/supabase-server.ts`
+via `getSupabaseAuthContext` in `lib/db/supabase-auth-context.ts`) so Postgres
+**RLS** enforces row access; the **service role** is reserved for verified
+webhooks, background workers, and admin paths that have no end-user JWT.
 
 **4.1 Entries**
 
@@ -1201,10 +1205,11 @@ Clerk\'s JWKS endpoint under Authentication \> JWT Settings in the
 Supabase dashboard. This must be configured before any RLS policies that
 reference auth.jwt() will work correctly.
 
-*Note: The service role key bypasses RLS entirely. It is used only in
-background workers and server-side API routes where Clerk auth has
-already been verified. It is never exposed to the client and never
-included in any client-side Supabase calls.*
+*Note: The service role key bypasses RLS entirely. It is used only after
+non-JWT trust boundaries are satisfied (e.g. verified Clerk webhooks,
+BullMQ workers, admin jobs). User-facing CRUD uses the anon key plus the
+user\'s Clerk JWT so RLS applies. The service role is never exposed to the
+client and never included in any client-side Supabase calls.*
 
 **14.3 Webhook Verification**
 

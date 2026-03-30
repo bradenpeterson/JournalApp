@@ -15,6 +15,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Create a new Supabase project
 - [x] Enable automatic RLS on the public schema during project creation
 - [x] Navigate to Settings > Data API and copy `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` into `.env.local`
+- [ ] Add `CAPSULE_ENCRYPTION_KEY` to `.env.local` when you reach Phase 4.5 — server-only secret for time-capsule encryption (do not derive it from `SUPABASE_SERVICE_ROLE_KEY`; see §4.5)
 - [x] Run the initial `users` table migration in the SQL editor:
   - [x] `id`, `clerk_id`, `email`, `display_name`, `theme`, `created_at`
   - [x] RLS policy: allow all operations where `auth.jwt()->>'sub' = clerk_id`
@@ -41,7 +42,9 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Use `verifyWebhook()` from `@clerk/nextjs/webhooks` to verify the signature (prefer this over hand-rolled Svix; add `svix` explicitly only if your lockfile does not already include it as a transitive dependency)
 - [x] Create the webhook handler at `app/api/webhooks/clerk/route.ts`
 - [x] On `user.created` event, upsert a row into the Supabase `users` table using the service role client
+- [ ] On `user.updated` event, upsert the same fields (`clerk_id`, `email`, `display_name`, etc.) so profile changes and webhook retries stay in sync
 - [x] Register the endpoint in the Clerk dashboard, subscribe to `user.created`, copy the signing secret into `.env.local` — use the **exact variable name** Clerk shows (e.g. `CLERK_WEBHOOK_SIGNING_SECRET` or `CLERK_WEBHOOK_SECRET` per [journal-lowlevel.md](journal-lowlevel.md)); it must match your code and deployment env
+- [ ] In the Clerk dashboard, subscribe the same endpoint to **`user.updated`** as well as `user.created`
 - [x] Use ngrok (`ngrok http 3000`) for local testing — update to Railway URL once deployed
 
 ### 1.7 Verification
@@ -54,6 +57,8 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 
 ## Phase 2 — Core Journaling
 
+**Schema prerequisite:** Before implementing **§2.2** behaviors that touch `mood_analyses` (GET with joined analysis, DELETE with cascade), the **`mood_analyses` table must exist** — run the migration in **§3.1** first if you want strict schema order, or add those behaviors only after §3.1 is done.
+
 ### 2.1 Entries Table Migration
 - [x] Run the `entries` table migration in Supabase:
   - [x] `id`, `user_id`, `title`, `body` (jsonb), `body_text`, `word_count`, `created_at`, `updated_at`, `fts` (generated tsvector)
@@ -62,20 +67,22 @@ A full step-by-step build plan for the personal journaling app. Work through eac
   - [x] GIN index on `fts`, B-tree index on `user_id`
 
 ### 2.2 Entries API Routes
-- [ ] Create `app/api/entries/route.ts`:
-  - [ ] `GET` — fetch all entries for the authed user ordered by `updated_at` desc; accept optional `?search=` param that uses Supabase's `.textSearch('fts', query)` for full-text search
-  - [ ] `POST` — create a new entry; accept `{ title, body, body_text }`; return the created row
-- [ ] Create `app/api/entries/[id]/route.ts`:
-  - [ ] `GET` — fetch a single entry by ID; verify ownership; **include joined `mood_analysis` (if any)** per low-level design
-  - [ ] `PATCH` — update `title`, `body`, `body_text`, `word_count`; `updated_at` is handled by the DB trigger
-  - [ ] `DELETE` — hard delete; cascades to `mood_analyses`
-- [ ] Every route must call `auth()` at the top and return 401 if no session
-- [ ] Use the server-side Supabase client (service role) in all routes
-- [ ] For `?search=`, treat user text as plain language: map it to a valid search (e.g. SQL `plainto_tsquery` / `websearch_to_tsquery` via an RPC, or use Supabase `textSearch` options that avoid passing raw strings straight through as `tsquery`)
+- [x] Create `app/api/entries/route.ts`:
+  - [x] `GET` — fetch all entries for the authed user ordered by `updated_at` desc; accept optional `?search=` param that uses Supabase's `.textSearch('fts', query)` for full-text search
+  - [x] `POST` — create a new entry; accept `{ title, body, body_text }`; return the created row
+- [x] Create `app/api/entries/[id]/route.ts`:
+  - [x] `GET` — fetch a single entry by ID; verify ownership; **include joined `mood_analysis` (if any)** per low-level design
+  - [x] `PATCH` — update `title`, `body`, `body_text`, `word_count`; `updated_at` is handled by the DB trigger
+  - [x] `DELETE` — hard delete; cascades to `mood_analyses`
+- [x] Every route must call `auth()` at the top and return 401 if no session
+- [x] Use the Supabase **server** client from **`lib/db/supabase-server.ts`** that forwards the **Clerk session token** (`accessToken`) so **RLS** enforces access — not the service-role client (`lib/db/supabase-auth-context.ts` wires `auth()` + that client + `getSupabaseUserId` for entries APIs)
+- [x] Reserve **`SUPABASE_SERVICE_ROLE_KEY`** for **webhooks**, **BullMQ workers**, and **admin-only** routes; use the same JWT server client for other user-facing APIs in later phases (`/api/analysis`, `/api/capsules`, `/api/uploads`, `/api/export/*`) wherever tables use RLS
+- [x] *If you use the service role for user-owned data,* RLS does not apply — every query must be scoped by `user_id`; prefer the JWT client so RLS remains a backstop (entries use JWT + RLS; webhook uses service role only after signature verification)
+- [x] For `?search=`, treat user text as plain language: map it to a valid search (e.g. SQL `plainto_tsquery` / `websearch_to_tsquery` via an RPC, or use Supabase `textSearch` options that avoid passing raw strings straight through as `tsquery`)
 
 ### 2.3 Helper: Get Supabase User ID
-- [ ] Create `lib/db/getUser.ts` — given a Clerk `userId`, look up and return the internal Supabase `users.id`
-- [ ] This is called at the top of every API route to resolve the foreign key for DB queries
+- [x] Create `lib/db/getUser.ts` — given a Clerk `userId`, look up and return the internal Supabase `users.id`
+- [x] This is called at the top of every API route to resolve the foreign key for DB queries
 
 *Optional later:* replace the per-request lookup with a custom JWT claim carrying Supabase `users.id` if traffic ever warrants it — for this app the extra query is usually fine.
 
@@ -95,6 +102,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [ ] On page load, immediately `POST` to `/api/entries` to create a blank entry and get back its ID
 - [ ] Redirect to `/entries/[id]/edit` so the entry has an ID before the user starts typing
 - [ ] This ensures auto-save always has an ID to `PATCH` against
+- [ ] Mitigate **orphan blank entries** on refresh or double navigation: e.g. reuse a draft via **`sessionStorage`** (`pendingEntryId`), periodic **cleanup** of empty entries, or **create-on-first-save** instead — pick one approach for v1
 
 ### 2.6 Entry Edit Page
 - [ ] Create `app/(app)/entries/[id]/edit/page.tsx`
@@ -124,7 +132,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 ### 2.10 Verification
 - [ ] Create a new entry, type content, wait for auto-save to fire, navigate away and back — confirm content persisted
 - [ ] Search for a word that exists in an entry — confirm it appears in results
-- [ ] Delete an entry — confirm it's gone from the list
+- [ ] Delete an entry — confirm it's gone from the list (after **`mood_analyses` exists**, confirm cascade if you have analyses)
 - [ ] Confirm unauthenticated users cannot access any entries API routes
 
 ---
@@ -132,7 +140,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 ## Phase 3 — AI Mood Analysis
 
 ### 3.1 Mood Analyses Table Migration
-- [ ] Run the `mood_analyses` table migration in Supabase:
+- [ ] Run the `mood_analyses` table migration in Supabase (skip if you already applied it for **§2.2** per the Phase 2 prerequisite):
   - [ ] `id`, `entry_id`, `user_id`, `mood_label`, `score`, `summary`, `prompt_suggestion`, `created_at`
   - [ ] RLS policy: allow all operations where JWT sub matches the row's user
   - [ ] B-tree indexes on `entry_id` and `user_id`
@@ -147,12 +155,13 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 
 ### 3.3 Analysis API Route
 - [ ] Create `app/api/analysis/route.ts`
-  - [ ] `POST` — accept `{ entryId }`; validate it's a UUID; verify the entry belongs to the authed user
+  - [ ] `POST` — accept `{ entryId }`; validate it's a UUID; verify the entry belongs to the authed user (JWT Supabase client + RLS, or equivalent ownership check)
   - [ ] Fetch the entry's `body_text` from Supabase
-  - [ ] Call OpenAI `gpt-4o-mini` with `response_format: { type: 'json_object' }`
-  - [ ] Parse the response and upsert into `mood_analyses`
-  - [ ] Return 202 immediately — this is fire-and-forget from the client
-  - [ ] Wrap the entire OpenAI call in try/catch; on failure log the error and return `{ status: 'failed' }` — never throw to the client
+  - [ ] **Choose one server model** (do not mix “return 202 immediately” with awaiting OpenAI in the same synchronous handler):
+    - **Option A — true async:** Return **202** right after validation, then run OpenAI + upsert inside **`after()` / `waitUntil`** (per your Next.js version) or enqueue a **BullMQ** job; document platform timeouts and that work continues after the response.
+    - **Option B — synchronous:** **Await** OpenAI + upsert, then return **200** or **202** when finished; the client may still call `fetch()` without `await` (non-blocking navigation), but the **server** does the full LLM round-trip — document **latency** and **route timeouts**.
+  - [ ] Call OpenAI `gpt-4o-mini` with `response_format: { type: 'json_object' }`; parse and upsert into `mood_analyses`
+  - [ ] Wrap OpenAI/DB work in try/catch; on failure log and return `{ status: 'failed' }` (or resolve the async task without throwing) — never leave the client with an unhandled error for expected failures
 - [ ] Add a basic in-memory rate limit: max 10 requests per user per hour keyed by Clerk `userId`
 - [ ] If you run **multiple** web instances, move that limiter to **Redis** so counts are shared (in-memory limits are per-process only)
 
@@ -208,6 +217,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
   - [ ] Insert result into `weekly_insights`
   - [ ] Send email via Resend
 - [ ] If processing fails for one user, log and skip — do not fail the entire job
+- [ ] *Scale:* loading all users and calling OpenAI in one cron run can hit **Railway time/memory limits** as usage grows; later consider **batching**, **concurrency limits**, or **one job per user**
 
 ### 4.4 Time Capsules Table Migration
 - [ ] Run the `time_capsules` table migration in Supabase:
@@ -218,15 +228,15 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 ### 4.5 Time Capsule Encryption
 - [ ] Create `lib/utils/encryption.ts`
 - [ ] Implement AES-256-GCM encrypt and decrypt functions using Node's built-in `crypto` module
-- [ ] Derive the encryption key from `SUPABASE_SERVICE_ROLE_KEY` using PBKDF2 with a fixed salt
-- [ ] Store encrypted output as `iv:ciphertext` string in the `body` column
+- [ ] Use a **dedicated server-only secret** `CAPSULE_ENCRYPTION_KEY` (e.g. 32-byte random, base64-encoded in env, or derive once with PBKDF2 from that secret and a fixed salt) — **do not** derive capsule keys from `SUPABASE_SERVICE_ROLE_KEY` (separates DB admin from app encryption; eases rotation)
+- [ ] Store encrypted output as `iv:ciphertext` string in the `body` column (optional later: **key version** column if you rotate keys and need re-encryption)
 - [ ] Only decrypt inside `GET /api/capsules/[id]` after confirming `is_unlocked = true` and ownership
-- [ ] *Threat model:* leaking `SUPABASE_SERVICE_ROLE_KEY` exposes the **whole** database, not only capsules — treat the key as tier-0; encryption is extra defense (e.g. backups), not a substitute for key hygiene
+- [ ] *Threat model:* application-level encryption is **not** end-to-end; the server can decrypt. It adds defense in depth (e.g. backups). Leaking `SUPABASE_SERVICE_ROLE_KEY` still compromises the DB — treat both DB and capsule secrets as tier-0
 
 ### 4.6 Time Capsule API Routes
 - [ ] Create `app/api/capsules/route.ts`:
   - [ ] `GET` — list all capsules; redact `body` for locked entries (return only `title`, `unlock_at`, `is_unlocked`)
-  - [ ] `POST` — encrypt body, insert row, schedule BullMQ delayed job with delay = `unlock_at` - `Date.now()`, store `job.id` in `bull_job_id`
+  - [ ] `POST` — encrypt body, insert row, schedule BullMQ delayed job with delay = `max(0, unlock_at - Date.now())` (if `unlock_at` is in the past, use **delay 0** / immediate job); watch **max delay** / queue limits for far-future `unlock_at`; store `job.id` in `bull_job_id`
 - [ ] Create `app/api/capsules/[id]/route.ts`:
   - [ ] `GET` — if `is_unlocked = true`, decrypt and return body; otherwise return locked state
   - [ ] `DELETE` — cancel BullMQ job via `bull_job_id`, delete row
@@ -239,6 +249,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
   - [ ] Set `is_unlocked = true` and `notification_sent = true`
   - [ ] Fetch user email
   - [ ] Send unlock notification email via Resend
+- [ ] **Reconciliation:** delayed jobs can be **lost** on worker restarts; add a **repeatable cron** (or run on worker startup) that finds rows with `unlock_at <= now()` and `is_unlocked = false`, sets `is_unlocked` (and sends email if not yet sent), so unlocks are not only tied to a single delayed job
 
 ### 4.8 Resend Email Setup
 - [ ] Create a Resend account and verify your sending domain
@@ -267,6 +278,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 ### 5.1 Supabase Storage Setup
 - [ ] Create a storage bucket named `entry-images` and set it to public
 - [ ] Add a Storage RLS policy: users can only upload to and delete from their own folder (`{clerk_id}/...`)
+- [ ] *Privacy:* public URLs + `{clerk_id}/{uuid}` are usually fine (UUIDv4 is hard to guess); for stricter privacy use a **private bucket** and **signed URLs** for reads
 
 ### 5.2 Entry Images Table Migration
 - [ ] Run the `entry_images` table migration:
@@ -308,7 +320,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 ### 6.1 Dashboard Stats
 - [ ] Calculate and display: current writing streak, longest streak, total entries, total word count
 - [ ] Create `lib/utils/streaks.ts` — takes an array of entry dates and returns current and longest streak
-- [ ] Decide how a "day" is defined for streaks (**UTC calendar date** vs **user's local timezone**) and document it; late-night local writes can split streaks if you use UTC naively
+- [ ] **Before implementing** `streaks.ts` and dashboard stats, **decide and document** how a "day" is defined (**UTC calendar date** vs **user's local timezone**); wire the same rule into tests — late-night local writes can split streaks if you use UTC naively
 - [ ] Fetch stats server-side on the dashboard page and pass as props
 - [ ] Show skeleton loaders while fetching
 
@@ -340,6 +352,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [ ] Render entries chronologically with title, date, body text, and mood score per page
 - [ ] For entries with images, fetch image buffers server-side and embed as base64
 - [ ] If an image fetch fails, render a placeholder and continue — do not abort the export
+- [ ] *Scale:* large journals + **base64 images** can **OOM** or hit **serverless timeouts**; consider **entry/page limits**, **streaming**, or splitting exports if needed
 - [ ] Note: if `@react-pdf/renderer` proves too complex, fall back to a client-side `window.print()` on a formatted hidden div
 
 ### 6.6 Responsive Layout Pass
@@ -408,7 +421,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 ## Phase 8 — Testing
 
 ### 8.1 Unit Tests (Vitest)
-- [ ] Set up Vitest with `npm install -D vitest`
+- [ ] Set up Vitest: `npm install -D vitest` is the **minimum** — you will typically also need **`jsdom`**, **`@vitejs/plugin-react`** (if testing React), and a **`vitest.config`** aligned with Next.js TypeScript paths; follow current [Vitest](https://vitest.dev/) + Next.js docs for this repo’s version
 - [ ] Write tests for:
   - [ ] `lib/utils/wordCount.ts` — word count from Tiptap JSON
   - [ ] `lib/utils/streaks.ts` — streak calculation from date arrays
@@ -463,14 +476,15 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [ ] Update `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` to production Clerk keys
 - [ ] Set production webhook signing secret to the **same env var name** your app expects (`CLERK_WEBHOOK_SIGNING_SECRET` or `CLERK_WEBHOOK_SECRET`, etc. — see §1.6)
 - [ ] Confirm `SUPABASE_SERVICE_ROLE_KEY` is set and never exposed client-side
+- [ ] Set `CAPSULE_ENCRYPTION_KEY` in production (server only; see §4.5)
 
 ### 9.3 Production Webhook
 - [ ] In the Clerk dashboard add a second webhook endpoint pointing to the Railway production URL: `https://your-app.railway.app/api/webhooks/clerk`
-- [ ] Subscribe to `user.created`
+- [ ] Subscribe to `user.created` and **`user.updated`** (same as §1.6)
 - [ ] Copy the new signing secret into Railway environment variables
 
 ### 9.4 railway.toml
-- [ ] Create `railway.toml` at the project root:
+- [ ] Create `railway.toml` at the project root (intended for the **`web`** service / default deploy — **`startCommand`** below is the Next.js app):
 ```toml
 [build]
 builder = "NIXPACKS"
@@ -480,16 +494,18 @@ startCommand = "npm run start"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 5
 ```
+- [ ] The **`worker`** service must use **`node workers/index.ts`** via **Railway’s per-service settings** (override start command in the dashboard) — do not assume one repo-level file starts both processes unless Railway is configured that way
 
 ### 9.5 CI/CD
 - [ ] Set up GitHub Actions to run Vitest on every pull request
 - [ ] Railway auto-deploys from the `main` branch on merge
-- [ ] Run Playwright E2E tests post-deploy against the Railway preview URL
+- [ ] Run Playwright E2E against a **known base URL** from GitHub Actions secrets (e.g. **staging** or **production**) — **Railway PR previews are not automatic** like Vercel unless you set them up; do not assume a preview URL exists in CI
 
 ### 9.6 Database Migrations
 - [ ] Manage all schema changes as numbered SQL files in `/supabase/migrations/`
 - [ ] Apply migrations manually via the Supabase CLI before deploying dependent code
 - [ ] There is no automated migration runner — apply manually before each deploy that requires schema changes
+- [ ] **Deploy checklist:** (1) apply migrations (`supabase db push` / CLI), (2) verify schema in the Supabase dashboard, (3) **then** deploy application code that depends on the new schema
 
 ### 9.7 Smoke Test
 - [ ] Sign up as a real user on production

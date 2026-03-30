@@ -1,11 +1,7 @@
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
-import { createClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { createServiceRoleClient } from '@/lib/db/supabase-service'
 
 export async function POST(req: Request) {
   let event
@@ -20,6 +16,7 @@ export async function POST(req: Request) {
   if (event.type === 'user.created') {
     const { id, email_addresses, first_name, last_name } = event.data
 
+    const supabase = createServiceRoleClient()
     const { error } = await supabase.from('users').upsert({
       clerk_id: id,
       email: email_addresses[0].email_address,
