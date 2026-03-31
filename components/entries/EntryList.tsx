@@ -139,7 +139,7 @@ export function EntryList() {
           {entries.map((entry) => (
             <li key={entry.id}>
               <Link
-                href={`/entries/${entry.id}/edit`}
+                href={`/entries/${entry.id}`}
                 className="block rounded-lg border border-neutral-200 bg-white p-4 transition hover:border-violet-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-violet-700"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-2">

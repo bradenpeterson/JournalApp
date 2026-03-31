@@ -117,11 +117,11 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Include a search input that calls `GET /api/entries?search=query` and re-renders the list
 
 ### 2.8 Single Entry View
-- [ ] Create `app/(app)/entries/[id]/page.tsx`
-- [ ] Fetch the entry and render it as read-only
-- [ ] Include an Edit button that links to `/entries/[id]/edit`
-- [ ] Include a Delete button that calls `DELETE /api/entries/[id]` and redirects to `/entries`
-- [ ] Pop up that confirms deleltion
+- [x] Create `app/(app)/entries/[id]/page.tsx`
+- [x] Fetch the entry and render it as read-only
+- [x] Include an Edit button that links to `/entries/[id]/edit`
+- [x] Include a Delete button that calls `DELETE /api/entries/[id]` and redirects to `/entries`
+- [x] Pop up that confirms deletion (`window.confirm` before delete in `EntryViewActions`)
 
 ### 2.9 Dashboard Skeleton
 - [ ] Create `app/(app)/dashboard/page.tsx`
