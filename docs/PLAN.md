@@ -105,10 +105,10 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Mitigate **orphan blank entries** on refresh or double navigation: e.g. reuse a draft via **`sessionStorage`** (`pendingEntryId`), periodic **cleanup** of empty entries, or **create-on-first-save** instead — pick one approach for v1 (`lib/journal/pending-entry.ts` + `journal:pendingEntryId` in sessionStorage; refresh on `/entries/new` reuses the same draft instead of POSTing again)
 
 ### 2.6 Entry Edit Page
-- [ ] Create `app/(app)/entries/[id]/edit/page.tsx`
-- [ ] Fetch the entry on load and pass `body` JSON to `editor.commands.setContent()`
-- [ ] Render the `TiptapEditor` component
-- [ ] Include a title input field that also debounce-saves
+- [x] Create `app/(app)/entries/[id]/edit/page.tsx`
+- [x] Fetch the entry on load and pass `body` JSON to `editor.commands.setContent()`
+- [x] Render the `TiptapEditor` component
+- [x] Include a title input field that also debounce-saves
 
 ### 2.7 Entry List Page
 - [ ] Create `app/(app)/entries/page.tsx`

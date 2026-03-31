@@ -1,27 +1,44 @@
-import Link from 'next/link'
+import { auth } from '@clerk/nextjs/server'
+import { notFound, redirect } from 'next/navigation'
 
-/**
- * Placeholder until §2.6 (full fetch + TiptapEditor + title).
- * `/entries/new` redirects here so the route must exist.
- */
-export default async function EditEntryPlaceholderPage({
+import { EntryEditForm } from '@/components/entries/EntryEditForm'
+import { createSupabaseServerClient } from '@/lib/db/supabase-server'
+import { isUuid } from '@/lib/utils/uuid'
+
+export default async function EditEntryPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  if (!isUuid(id)) {
+    notFound()
+  }
+
+  const { userId } = await auth()
+  if (!userId) {
+    redirect('/sign-in')
+  }
+
+  const supabase = await createSupabaseServerClient()
+  const { data, error } = await supabase
+    .from('entries')
+    .select('id, title, body')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error) {
+    console.error('EditEntryPage load', error)
+    throw new Error('Failed to load entry')
+  }
+
+  if (!data) {
+    notFound()
+  }
 
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-6">
-      <p className="text-neutral-600 dark:text-neutral-400">
-        Draft <span className="font-mono text-sm">{id}</span> — editor UI arrives in §2.6.
-      </p>
-      <Link
-        href="/entries/new"
-        className="text-sm text-violet-600 underline underline-offset-2 dark:text-violet-400"
-      >
-        New entry
-      </Link>
+    <main>
+      <EntryEditForm key={data.id} entryId={data.id} initialTitle={data.title} initialBody={data.body} />
     </main>
   )
 }
