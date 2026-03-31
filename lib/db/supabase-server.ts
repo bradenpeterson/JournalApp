@@ -3,14 +3,16 @@ import 'server-only'
 import { auth } from '@clerk/nextjs/server'
 import { createClient } from '@supabase/supabase-js'
 
-import { CLERK_SUPABASE_JWT_TEMPLATE } from './clerk-supabase-constants'
-
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 /**
  * Supabase client for Server Components, Server Actions, and Route Handlers.
- * Sends the current user's Clerk JWT on each request so Postgres RLS sees `auth.jwt()`.
+ * Sends the **default Clerk session token** on each request so Postgres RLS sees `auth.jwt()`.
+ *
+ * Use Clerk’s native Supabase integration (Dashboard → [Supabase setup](https://dashboard.clerk.com/setup/supabase)
+ * → Activate). That adds `role: "authenticated"` to session tokens — a separate JWT template is not required
+ * ([Clerk docs](https://clerk.com/docs/guides/development/integrations/databases/supabase)).
  */
 export async function createSupabaseServerClient() {
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -21,7 +23,7 @@ export async function createSupabaseServerClient() {
 
   return createClient(supabaseUrl, supabaseAnonKey, {
     async accessToken() {
-      return (await getToken({ template: CLERK_SUPABASE_JWT_TEMPLATE })) ?? null
+      return (await getToken()) ?? null
     },
   })
 }

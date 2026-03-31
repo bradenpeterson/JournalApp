@@ -131,10 +131,10 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Stats and mood chart will be filled in during Phase 3 and Phase 5
 
 ### 2.10 Verification
-- [ ] Create a new entry, type content, wait for auto-save to fire, navigate away and back — confirm content persisted
-- [ ] Search for a word that exists in an entry — confirm it appears in results
-- [ ] Delete an entry — confirm it's gone from the list (after **`mood_analyses` exists**, confirm cascade if you have analyses)
-- [ ] Confirm unauthenticated users cannot access any entries API routes
+- [x] **Manual:** Create a new entry, type content, wait for auto-save (`Saving…` / `Saved`), navigate away and back — confirm content persisted
+- [x] **Manual:** Search for a word that exists in an entry (dashboard or `/entries`) — confirm it appears in results
+- [x] **Manual:** Delete an entry — confirm it's gone from the list (after **`mood_analyses` exists**, confirm cascade if you have analyses)
+- [x] **Automated:** Unauthenticated users cannot use entries APIs — run `npm run test:e2e` (`tests/e2e/entries-api-unauthenticated.spec.ts`; uses `maxRedirects: 0` so Clerk redirects are not mistaken for `200 OK`). Requires `.env.local` like `npm run dev`; reuses an existing server on port 3000 when `CI` is not `true`
 
 ---
 
