@@ -24,3 +24,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Tiptap placeholder (extension adds data-placeholder on the first empty block) */
+.tiptap-editor-content .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--foreground);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  opacity: 0.35;
+}

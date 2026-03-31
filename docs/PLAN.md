@@ -87,15 +87,15 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 *Optional later:* replace the per-request lookup with a custom JWT claim carrying Supabase `users.id` if traffic ever warrants it — for this app the extra query is usually fine.
 
 ### 2.4 Tiptap Editor Component
-- [ ] Install Tiptap: `@tiptap/react`, `@tiptap/starter-kit`, `@tiptap/extension-placeholder`, `@tiptap/extension-character-count`, `@tiptap/extension-typography`
-- [ ] Create `components/editor/TiptapEditor.tsx`
-- [ ] Initialize the editor with all required extensions
-- [ ] Implement debounced auto-save: fire a `PATCH` to `/api/entries/[id]` 2 seconds after the user stops typing
-- [ ] Extract `body_text` using `editor.getText({ blockSeparator: ' ' })` on each save
-- [ ] Derive `word_count` from `body_text` on each save
-- [ ] Show a `Saving...` / `Saved` visual indicator in the UI
-- [ ] On component unmount (`useEffect` cleanup), fire a final save immediately without the debounce delay to avoid data loss on navigation
-- [ ] Avoid races between a pending debounced `PATCH` and the unmount save: clear the debounce timer on cleanup, use single-flight / in-flight guard, or flush the debounced save before the final one
+- [x] Install Tiptap: `@tiptap/react`, `@tiptap/starter-kit`, `@tiptap/extension-placeholder`, `@tiptap/extension-character-count`, `@tiptap/extension-typography`
+- [x] Create `components/editor/TiptapEditor.tsx`
+- [x] Initialize the editor with all required extensions
+- [x] Implement debounced auto-save: fire a `PATCH` to `/api/entries/[id]` 2 seconds after the user stops typing
+- [x] Extract `body_text` using `editor.getText({ blockSeparator: ' ' })` on each save
+- [x] Derive `word_count` from `body_text` on each save
+- [x] Show a `Saving...` / `Saved` visual indicator in the UI
+- [x] On component unmount (`useEffect` cleanup), fire a final save immediately without the debounce delay to avoid data loss on navigation
+- [x] Avoid races between a pending debounced `PATCH` and the unmount save: clear the debounce timer on cleanup, use single-flight / in-flight guard, or flush the debounced save before the final one
 
 ### 2.5 New Entry Flow
 - [ ] Create `app/(app)/entries/new/page.tsx`
