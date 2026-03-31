@@ -98,11 +98,11 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Avoid races between a pending debounced `PATCH` and the unmount save: clear the debounce timer on cleanup, use single-flight / in-flight guard, or flush the debounced save before the final one
 
 ### 2.5 New Entry Flow
-- [ ] Create `app/(app)/entries/new/page.tsx`
-- [ ] On page load, immediately `POST` to `/api/entries` to create a blank entry and get back its ID
-- [ ] Redirect to `/entries/[id]/edit` so the entry has an ID before the user starts typing
-- [ ] This ensures auto-save always has an ID to `PATCH` against
-- [ ] Mitigate **orphan blank entries** on refresh or double navigation: e.g. reuse a draft via **`sessionStorage`** (`pendingEntryId`), periodic **cleanup** of empty entries, or **create-on-first-save** instead — pick one approach for v1
+- [x] Create `app/(app)/entries/new/page.tsx`
+- [x] On page load, immediately `POST` to `/api/entries` to create a blank entry and get back its ID
+- [x] Redirect to `/entries/[id]/edit` so the entry has an ID before the user starts typing
+- [x] This ensures auto-save always has an ID to `PATCH` against
+- [x] Mitigate **orphan blank entries** on refresh or double navigation: e.g. reuse a draft via **`sessionStorage`** (`pendingEntryId`), periodic **cleanup** of empty entries, or **create-on-first-save** instead — pick one approach for v1 (`lib/journal/pending-entry.ts` + `journal:pendingEntryId` in sessionStorage; refresh on `/entries/new` reuses the same draft instead of POSTing again)
 
 ### 2.6 Entry Edit Page
 - [ ] Create `app/(app)/entries/[id]/edit/page.tsx`
