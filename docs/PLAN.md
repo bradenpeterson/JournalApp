@@ -124,11 +124,11 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Pop up that confirms deletion (`window.confirm` before delete in `EntryViewActions`)
 
 ### 2.9 Dashboard Skeleton
-- [ ] Create `app/(app)/dashboard/page.tsx`
-- [ ] Render a basic layout with placeholder sections for stats, mood chart, and recent entries
-- [ ] Populate the recent entries section by fetching the 5 most recent entries from `/api/entries`
-- [ ] Add a **dashboard search** input wired to `GET /api/entries?search=` (same API as the entry list; high-level and low-level specs place full-text search on the dashboard)
-- [ ] Stats and mood chart will be filled in during Phase 3 and Phase 5
+- [x] Create `app/(app)/dashboard/page.tsx`
+- [x] Render a basic layout with placeholder sections for stats, mood chart, and recent entries
+- [x] Populate the recent entries section by fetching the 5 most recent entries from `/api/entries`
+- [x] Add a **dashboard search** input wired to `GET /api/entries?search=` (same API as the entry list; high-level and low-level specs place full-text search on the dashboard)
+- [x] Stats and mood chart will be filled in during Phase 3 and Phase 5
 
 ### 2.10 Verification
 - [ ] Create a new entry, type content, wait for auto-save to fire, navigate away and back — confirm content persisted

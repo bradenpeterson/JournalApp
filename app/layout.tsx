@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ClerkProvider, Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
 import { Geist, Geist_Mono } from 'next/font/google'
+import Link from 'next/link'
 import './globals.css'
 
 const geistSans = Geist({
@@ -27,18 +28,30 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ClerkProvider>
-          <header className="flex justify-end items-center p-4 gap-4 h-16">
-            <Show when="signed-out">
-              <SignInButton />
-              <SignUpButton>
-                <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </Show>
+          <header className="flex h-16 items-center gap-4 p-4">
             <Show when="signed-in">
-              <UserButton />
+              <nav className="mr-auto flex items-center gap-5 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                <Link href="/dashboard" className="hover:text-violet-600 dark:hover:text-violet-400">
+                  Dashboard
+                </Link>
+                <Link href="/entries" className="hover:text-violet-600 dark:hover:text-violet-400">
+                  Entries
+                </Link>
+              </nav>
             </Show>
+            <div className="ml-auto flex items-center gap-4">
+              <Show when="signed-out">
+                <SignInButton />
+                <SignUpButton>
+                  <button className="h-10 cursor-pointer rounded-full bg-[#6c47ff] px-4 text-sm font-medium text-white sm:h-12 sm:px-5 sm:text-base">
+                    Sign Up
+                  </button>
+                </SignUpButton>
+              </Show>
+              <Show when="signed-in">
+                <UserButton />
+              </Show>
+            </div>
           </header>
           {children}
         </ClerkProvider>
