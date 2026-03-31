@@ -111,16 +111,17 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Include a title input field that also debounce-saves
 
 ### 2.7 Entry List Page
-- [ ] Create `app/(app)/entries/page.tsx`
-- [ ] Fetch all entries via `GET /api/entries`
-- [ ] Render each entry as a card showing title, date, word count, and a truncated preview from `body_text`
-- [ ] Include a search input that calls `GET /api/entries?search=query` and re-renders the list
+- [x] Create `app/(app)/entries/page.tsx`
+- [x] Fetch all entries via `GET /api/entries`
+- [x] Render each entry as a card showing title, date, word count, and a truncated preview from `body_text`
+- [x] Include a search input that calls `GET /api/entries?search=query` and re-renders the list
 
 ### 2.8 Single Entry View
 - [ ] Create `app/(app)/entries/[id]/page.tsx`
 - [ ] Fetch the entry and render it as read-only
 - [ ] Include an Edit button that links to `/entries/[id]/edit`
 - [ ] Include a Delete button that calls `DELETE /api/entries/[id]` and redirects to `/entries`
+- [ ] Pop up that confirms deleltion
 
 ### 2.9 Dashboard Skeleton
 - [ ] Create `app/(app)/dashboard/page.tsx`
