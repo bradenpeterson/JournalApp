@@ -203,9 +203,9 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Configure Redis/BullMQ for **reconnects** and transient failures; hosted platforms may restart processes — keep job processors idempotent where you can *(see `workers/redis-connection.ts` + `SIGTERM`/`SIGINT` shutdown in `workers/index.ts`)*
 
 ### 4.2 Weekly Digest Table Migration
-- [ ] Run the `weekly_insights` table migration in Supabase:
-  - [ ] `id`, `user_id`, `week_start`, `week_end`, `summary`, `avg_score`, `entry_count`, `top_mood`, `created_at`
-  - [ ] RLS policy scoped to the authenticated user
+- [x] Run the `weekly_insights` table migration in Supabase:
+  - [x] `id`, `user_id`, `week_start`, `week_end`, `summary`, `avg_score`, `entry_count`, `top_mood`, `created_at`
+  - [x] RLS policy scoped to the authenticated user
 
 ### 4.3 Weekly Digest Worker
 - [ ] Create `workers/weeklyDigest.ts`
