@@ -141,18 +141,18 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 ## Phase 3 — AI Mood Analysis
 
 ### 3.1 Mood Analyses Table Migration
-- [ ] Run the `mood_analyses` table migration in Supabase (skip if you already applied it for **§2.2** per the Phase 2 prerequisite):
-  - [ ] `id`, `entry_id`, `user_id`, `mood_label`, `score`, `summary`, `prompt_suggestion`, `created_at`
-  - [ ] RLS policy: allow all operations where JWT sub matches the row's user
-  - [ ] B-tree indexes on `entry_id` and `user_id`
-- [ ] Lock in the mood label enum: `joyful`, `content`, `neutral`, `anxious`, `sad`, `angry`, `reflective` — use these exact values everywhere
+- [x] Run the `mood_analyses` table migration in Supabase (skip if you already applied it for **§2.2** per the Phase 2 prerequisite):
+  - [x] `id`, `entry_id`, `user_id`, `mood_label`, `score`, `summary`, `prompt_suggestion`, `created_at`
+  - [x] RLS policy: allow all operations where JWT sub matches the row's user
+  - [x] B-tree indexes on `entry_id` and `user_id`
+- [x] Lock in the mood label enum: `joyful`, `content`, `neutral`, `anxious`, `sad`, `angry`, `reflective` — use these exact values everywhere (DB: `20250330140000_mood_analyses_mood_label_check.sql`; TS: `lib/mood/labels.ts`)
 
 ### 3.2 OpenAI Setup
-- [ ] Install `openai` package
-- [ ] Add `OPENAI_API_KEY` to `.env.local`
-- [ ] Create `lib/openai/client.ts` that exports a configured OpenAI client instance
-- [ ] Create `lib/openai/prompts.ts` that exports the system prompt string for per-entry mood analysis
-- [ ] The prompt must use JSON mode schema enforcement — specify the exact fields and value constraints
+- [x] Install `openai` package
+- [ ] Add `OPENAI_API_KEY` to `.env.local` (already documented in `.env.example`; add the real key when you have it)
+- [x] Create `lib/openai/client.ts` that exports a configured OpenAI client instance
+- [x] Create `lib/openai/prompts.ts` that exports the system prompt string for per-entry mood analysis
+- [x] The prompt must use JSON mode schema enforcement — specify the exact fields and value constraints (`MOOD_ANALYSIS_SYSTEM_PROMPT` + `MOOD_ANALYSIS_RESPONSE_FORMAT`; `parseMoodAnalysisJson` validates output)
 
 ### 3.3 Analysis API Route
 - [ ] Create `app/api/analysis/route.ts`
