@@ -153,6 +153,18 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
   }, [entryId])
 
   useEffect(() => {
+    const analyzeEntryId = entryId
+    return () => {
+      void fetch('/api/analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entryId: analyzeEntryId }),
+        keepalive: true,
+      })
+    }
+  }, [entryId])
+
+  useEffect(() => {
     const flushEntryId = entryId
     const payloadByEntry = lastPayloadByEntryIdRef.current
     return () => {

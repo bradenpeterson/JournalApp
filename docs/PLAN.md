@@ -167,9 +167,9 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] If you run **multiple** web instances, move that limiter to **Redis** so counts are shared (in-memory limits are per-process only) — *documented in `lib/analysis/rateLimit.ts`; still in-memory for v1*
 
 ### 3.4 Navigate-Away Trigger
-- [ ] In `TiptapEditor.tsx`, add a `useEffect` cleanup function that fires a `POST` to `/api/analysis` with the `entryId` when the component unmounts
-- [ ] This must be non-blocking — use a plain `fetch()` with no `await` so it doesn't delay navigation
-- [ ] *Tab close:* the browser may abort an in-flight `fetch`. Optional hardening: `navigator.sendBeacon` or `visibilitychange` / `pagehide` (watch auth headers, payload size, CORS). Accepting an occasional missed analysis is reasonable for v1.
+- [x] In `TiptapEditor.tsx`, add a `useEffect` cleanup function that fires a `POST` to `/api/analysis` with the `entryId` when the component unmounts
+- [x] This must be non-blocking — use a plain `fetch()` with no `await` so it doesn't delay navigation
+- [x] *Tab close:* the browser may abort an in-flight `fetch`. Optional hardening: `navigator.sendBeacon` or `visibilitychange` / `pagehide` (watch auth headers, payload size, CORS). Accepting an occasional missed analysis is reasonable for v1. *Uses `keepalive: true` on the analysis `fetch` as light hardening; tab-close can still drop requests.*
 
 ### 3.5 Mood Chart Component
 - [ ] Install `recharts`
