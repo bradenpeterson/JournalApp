@@ -237,14 +237,14 @@ A full step-by-step build plan for the personal journaling app. Work through eac
   - [x] `DELETE` — cancel BullMQ job via `bull_job_id`, delete row
 
 ### 4.7 Time Capsule Unlock Worker
-- [ ] Create `workers/timeCapsule.ts`
-- [ ] Processor logic:
-  - [ ] Receive `capsuleId` from job data
-  - [ ] Fetch capsule from Supabase
-  - [ ] Set `is_unlocked = true` and `notification_sent = true`
-  - [ ] Fetch user email
-  - [ ] Send unlock notification email via Resend
-- [ ] **Reconciliation:** delayed jobs can be **lost** on worker restarts; add a **repeatable cron** (or run on worker startup) that finds rows with `unlock_at <= now()` and `is_unlocked = false`, sets `is_unlocked` (and sends email if not yet sent), so unlocks are not only tied to a single delayed job
+- [x] Create `workers/timeCapsule.ts`
+- [x] Processor logic:
+  - [x] Receive `capsuleId` from job data
+  - [x] Fetch capsule from Supabase
+  - [x] Set `is_unlocked = true` and `notification_sent = true`
+  - [x] Fetch user email
+  - [x] Send unlock notification email via Resend
+- [x] **Reconciliation:** delayed jobs can be **lost** on worker restarts; add a **repeatable cron** (or run on worker startup) that finds rows with `unlock_at <= now()` and `is_unlocked = false`, sets `is_unlocked` (and sends email if not yet sent), so unlocks are not only tied to a single delayed job *(startup reconcile + BullMQ `upsertJobScheduler` every 15m UTC; also picks up `is_unlocked` + `notification_sent=false` after `unlock_at`)*
 
 ### 4.8 Resend Email Setup
 - [ ] Create a Resend account and verify your sending domain

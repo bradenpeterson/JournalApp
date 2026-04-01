@@ -5,10 +5,8 @@
  */
 import { Queue, Worker } from 'bullmq'
 
-import { TIME_CAPSULE_UNLOCK_JOB_NAME } from '@/lib/bullmq/capsule-job-name'
-
 import { createBullmqConnection } from './redis-connection'
-import { QUEUE_TIME_CAPSULE } from './queue-names'
+import { startTimeCapsuleWorker } from './timeCapsule'
 import { startWeeklyDigestWorker } from './weeklyDigest'
 
 async function main() {
@@ -25,23 +23,9 @@ async function main() {
   workers.push(weeklyWorker)
   queues.push(weeklyQueue)
 
-  workers.push(
-    new Worker(
-      QUEUE_TIME_CAPSULE,
-      async (job) => {
-        if (job.name === TIME_CAPSULE_UNLOCK_JOB_NAME) {
-          console.info(
-            `[${QUEUE_TIME_CAPSULE}] unlock job queued (implement §4.7 processor)`,
-            job.id,
-            job.data,
-          )
-          return
-        }
-        console.info(`[${QUEUE_TIME_CAPSULE}] job`, job.id, job.name, job.data)
-      },
-      { connection: shared.duplicate() },
-    ),
-  )
+  const { worker: capsuleWorker, queue: capsuleQueue } = await startTimeCapsuleWorker(shared)
+  workers.push(capsuleWorker)
+  queues.push(capsuleQueue)
 
   for (const w of workers) {
     w.on('error', (err) => {
@@ -49,7 +33,7 @@ async function main() {
     })
   }
 
-  console.info('[worker] BullMQ workers registered (weekly digest + time-capsule stub)')
+  console.info('[worker] BullMQ workers registered (weekly digest + time capsule)')
 
   const shutdown = async (signal: string) => {
     console.info(`[worker] ${signal} — closing workers and queues…`)
