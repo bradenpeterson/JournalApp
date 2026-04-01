@@ -196,11 +196,11 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 ## Phase 4 — Background Jobs
 
 ### 4.1 Redis + Worker Setup on Railway
-- [ ] Provision a Redis instance via the Railway dashboard
-- [ ] Copy the `REDIS_URL` into `.env.local`
-- [ ] Install `bullmq` and `ioredis`
-- [ ] Create `workers/index.ts` as the worker entry point — initialize IORedis connection and register both workers
-- [ ] Configure Redis/BullMQ for **reconnects** and transient failures; hosted platforms may restart processes — keep job processors idempotent where you can
+- [x] Provision a Redis instance via the Railway dashboard
+- [x] Copy the `REDIS_URL` into `.env.local`
+- [x] Install `bullmq` and `ioredis`
+- [x] Create `workers/index.ts` as the worker entry point — initialize IORedis connection and register both workers
+- [x] Configure Redis/BullMQ for **reconnects** and transient failures; hosted platforms may restart processes — keep job processors idempotent where you can *(see `workers/redis-connection.ts` + `SIGTERM`/`SIGINT` shutdown in `workers/index.ts`)*
 
 ### 4.2 Weekly Digest Table Migration
 - [ ] Run the `weekly_insights` table migration in Supabase:
