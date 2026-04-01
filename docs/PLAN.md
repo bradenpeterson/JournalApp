@@ -229,12 +229,12 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] **Omitted:** application-level encryption for capsule bodies — same trust model as journal **`entries`** (plain `jsonb` in Postgres; **RLS** limits app access to the owner). Project admins with DB or service-role access can still read rows, as with entries.
 
 ### 4.6 Time Capsule API Routes
-- [ ] Create `app/api/capsules/route.ts`:
-  - [ ] `GET` — list all capsules; redact `body` for locked entries (return only `title`, `unlock_at`, `is_unlocked`)
-  - [ ] `POST` — store Tiptap JSON in `body`, insert row, schedule BullMQ delayed job with delay = `max(0, unlock_at - Date.now())` (if `unlock_at` is in the past, use **delay 0** / immediate job); watch **max delay** / queue limits for far-future `unlock_at`; store `job.id` in `bull_job_id`
-- [ ] Create `app/api/capsules/[id]/route.ts`:
-  - [ ] `GET` — if `is_unlocked = true`, return body; otherwise return locked state (no `body`)
-  - [ ] `DELETE` — cancel BullMQ job via `bull_job_id`, delete row
+- [x] Create `app/api/capsules/route.ts`:
+  - [x] `GET` — list all capsules; redact `body` for locked entries (return only `title`, `unlock_at`, `is_unlocked`)
+  - [x] `POST` — store Tiptap JSON in `body`, insert row, schedule BullMQ delayed job with delay = `max(0, unlock_at - Date.now())` (if `unlock_at` is in the past, use **delay 0** / immediate job); watch **max delay** / queue limits for far-future `unlock_at`; store `job.id` in `bull_job_id` *(max delay ≈10y via `MAX_CAPSULE_DELAY_MS` in `lib/bullmq/time-capsule-queue.ts`)*
+- [x] Create `app/api/capsules/[id]/route.ts`:
+  - [x] `GET` — if `is_unlocked = true`, return body; otherwise return locked state (no `body`)
+  - [x] `DELETE` — cancel BullMQ job via `bull_job_id`, delete row
 
 ### 4.7 Time Capsule Unlock Worker
 - [ ] Create `workers/timeCapsule.ts`

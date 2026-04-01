@@ -5,6 +5,8 @@
  */
 import { Queue, Worker } from 'bullmq'
 
+import { TIME_CAPSULE_UNLOCK_JOB_NAME } from '@/lib/bullmq/capsule-job-name'
+
 import { createBullmqConnection } from './redis-connection'
 import { QUEUE_TIME_CAPSULE } from './queue-names'
 import { startWeeklyDigestWorker } from './weeklyDigest'
@@ -27,7 +29,15 @@ async function main() {
     new Worker(
       QUEUE_TIME_CAPSULE,
       async (job) => {
-        console.info(`[${QUEUE_TIME_CAPSULE}] stub processor (implement §4.7)`, job.id, job.name)
+        if (job.name === TIME_CAPSULE_UNLOCK_JOB_NAME) {
+          console.info(
+            `[${QUEUE_TIME_CAPSULE}] unlock job queued (implement §4.7 processor)`,
+            job.id,
+            job.data,
+          )
+          return
+        }
+        console.info(`[${QUEUE_TIME_CAPSULE}] job`, job.id, job.name, job.data)
       },
       { connection: shared.duplicate() },
     ),
