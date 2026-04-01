@@ -221,10 +221,10 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [ ] *Scale:* loading all users and calling OpenAI in one cron run can hit **Railway time/memory limits** as usage grows; later consider **batching**, **concurrency limits**, or **one job per user** *(still recommended for growth; not implemented in v1)*
 
 ### 4.4 Time Capsules Table Migration
-- [ ] Run the `time_capsules` table migration in Supabase:
-  - [ ] `id`, `user_id`, `title`, `body` (jsonb, encrypted), `unlock_at`, `is_unlocked`, `notification_sent`, `bull_job_id`, `created_at`
-  - [ ] RLS policy scoped to the authenticated user
-  - [ ] B-tree indexes on `unlock_at` and composite `(user_id, is_unlocked)`
+- [x] Run the `time_capsules` table migration in Supabase:
+  - [x] `id`, `user_id`, `title`, `body` (jsonb, encrypted), `unlock_at`, `is_unlocked`, `notification_sent`, `bull_job_id`, `created_at` *(`body` is **`text`** in DB so §4.5 can store `iv:ciphertext`; logical content is Tiptap JSON before encrypt.)*
+  - [x] RLS policy scoped to the authenticated user
+  - [x] B-tree indexes on `unlock_at` and composite `(user_id, is_unlocked)`
 
 ### 4.5 Time Capsule Encryption
 - [ ] Create `lib/utils/encryption.ts`
