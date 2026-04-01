@@ -186,10 +186,10 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Handle the case where no analysis exists yet with a default placeholder prompt
 
 ### 3.7 Verification
-- [ ] Write an entry, navigate away, return to the dashboard — confirm a mood analysis appears on the chart
-- [ ] Confirm the mood label is one of the seven valid values
-- [ ] Confirm the score is between 1 and 10
-- [ ] Confirm a failed OpenAI call does not break the editor or navigation
+- [ ] Write an entry, navigate away, return to the dashboard — confirm a mood analysis appears on the chart *(code path: unmount flush `PATCH` → `POST /api/analysis` → `mood_analyses` insert; `MoodChart` loads last 30 rows — **manual check** once `OPENAI_API_KEY` + migrations are in place)*
+- [ ] Confirm the mood label is one of the seven valid values *(enforced by `parseMoodAnalysisJson` + `isMoodLabel` in `lib/openai/prompts.ts` and DB `mood_analyses_mood_label_check`)*
+- [ ] Confirm the score is between 1 and 10 *(enforced by `parseMoodAnalysisJson` and `mood_analyses` `check (score between 1 and 10)`)*
+- [ ] Confirm a failed OpenAI call does not break the editor or navigation *(editor uses fire-and-forget `fetch` with no `await`; route returns `200` + `{ status: 'failed' }` on model/parse/DB errors; `503` if key missing — no client-side throw)*
 
 ---
 

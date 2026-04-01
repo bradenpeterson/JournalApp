@@ -152,21 +152,20 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
     lastInitialJsonRef.current = null
   }, [entryId])
 
-  useEffect(() => {
-    const analyzeEntryId = entryId
-    return () => {
-      void fetch('/api/analysis', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entryId: analyzeEntryId }),
-        keepalive: true,
-      })
-    }
-  }, [entryId])
-
+  /** §3.4 + §3.7 — On leave, persist latest draft then analyze so `/api/analysis` reads up-to-date `body_text`. */
   useEffect(() => {
     const flushEntryId = entryId
     const payloadByEntry = lastPayloadByEntryIdRef.current
+
+    function postAnalysis() {
+      void fetch('/api/analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entryId: flushEntryId }),
+        keepalive: true,
+      })
+    }
+
     return () => {
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current)
@@ -174,15 +173,21 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
       }
 
       const payload = payloadByEntry.get(flushEntryId)
-      if (!payload) return
+      payloadByEntry.delete(flushEntryId)
+
+      if (!payload) {
+        postAnalysis()
+        return
+      }
 
       void fetch(`/api/entries/${encodeURIComponent(flushEntryId)}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
         keepalive: true,
+      }).finally(() => {
+        postAnalysis()
       })
-      payloadByEntry.delete(flushEntryId)
     }
   }, [entryId])
 

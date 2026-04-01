@@ -56,7 +56,6 @@ export function WritingPromptCard() {
   }, [isLoaded, session, supabase])
 
   const display = prompt ?? DEFAULT_WRITING_PROMPT
-  const isPlaceholder = prompt === null
 
   return (
     <section
