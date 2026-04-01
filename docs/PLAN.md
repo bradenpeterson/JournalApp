@@ -15,7 +15,6 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Create a new Supabase project
 - [x] Enable automatic RLS on the public schema during project creation
 - [x] Navigate to Settings > Data API and copy `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` into `.env.local`
-- [ ] Add `CAPSULE_ENCRYPTION_KEY` to `.env.local` when you reach Phase 4.5 — server-only secret for time-capsule encryption (do not derive it from `SUPABASE_SERVICE_ROLE_KEY`; see §4.5)
 - [x] Run the initial `users` table migration in the SQL editor:
   - [x] `id`, `clerk_id`, `email`, `display_name`, `theme`, `created_at`
   - [x] RLS policy: allow all operations where `auth.jwt()->>'sub' = clerk_id`
@@ -222,24 +221,19 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 
 ### 4.4 Time Capsules Table Migration
 - [x] Run the `time_capsules` table migration in Supabase:
-  - [x] `id`, `user_id`, `title`, `body` (jsonb, encrypted), `unlock_at`, `is_unlocked`, `notification_sent`, `bull_job_id`, `created_at` *(`body` is **`text`** in DB so §4.5 can store `iv:ciphertext`; logical content is Tiptap JSON before encrypt.)*
+  - [x] `id`, `user_id`, `title`, `body` (**jsonb** — Tiptap document, same shape as `entries.body`), `unlock_at`, `is_unlocked`, `notification_sent`, `bull_job_id`, `created_at`
   - [x] RLS policy scoped to the authenticated user
   - [x] B-tree indexes on `unlock_at` and composite `(user_id, is_unlocked)`
 
-### 4.5 Time Capsule Encryption
-- [ ] Create `lib/utils/encryption.ts`
-- [ ] Implement AES-256-GCM encrypt and decrypt functions using Node's built-in `crypto` module
-- [ ] Use a **dedicated server-only secret** `CAPSULE_ENCRYPTION_KEY` (e.g. 32-byte random, base64-encoded in env, or derive once with PBKDF2 from that secret and a fixed salt) — **do not** derive capsule keys from `SUPABASE_SERVICE_ROLE_KEY` (separates DB admin from app encryption; eases rotation)
-- [ ] Store encrypted output as `iv:ciphertext` string in the `body` column (optional later: **key version** column if you rotate keys and need re-encryption)
-- [ ] Only decrypt inside `GET /api/capsules/[id]` after confirming `is_unlocked = true` and ownership
-- [ ] *Threat model:* application-level encryption is **not** end-to-end; the server can decrypt. It adds defense in depth (e.g. backups). Leaking `SUPABASE_SERVICE_ROLE_KEY` still compromises the DB — treat both DB and capsule secrets as tier-0
+### 4.5 Time capsule storage (no at-rest encryption)
+- [x] **Omitted:** application-level encryption for capsule bodies — same trust model as journal **`entries`** (plain `jsonb` in Postgres; **RLS** limits app access to the owner). Project admins with DB or service-role access can still read rows, as with entries.
 
 ### 4.6 Time Capsule API Routes
 - [ ] Create `app/api/capsules/route.ts`:
   - [ ] `GET` — list all capsules; redact `body` for locked entries (return only `title`, `unlock_at`, `is_unlocked`)
-  - [ ] `POST` — encrypt body, insert row, schedule BullMQ delayed job with delay = `max(0, unlock_at - Date.now())` (if `unlock_at` is in the past, use **delay 0** / immediate job); watch **max delay** / queue limits for far-future `unlock_at`; store `job.id` in `bull_job_id`
+  - [ ] `POST` — store Tiptap JSON in `body`, insert row, schedule BullMQ delayed job with delay = `max(0, unlock_at - Date.now())` (if `unlock_at` is in the past, use **delay 0** / immediate job); watch **max delay** / queue limits for far-future `unlock_at`; store `job.id` in `bull_job_id`
 - [ ] Create `app/api/capsules/[id]/route.ts`:
-  - [ ] `GET` — if `is_unlocked = true`, decrypt and return body; otherwise return locked state
+  - [ ] `GET` — if `is_unlocked = true`, return body; otherwise return locked state (no `body`)
   - [ ] `DELETE` — cancel BullMQ job via `bull_job_id`, delete row
 
 ### 4.7 Time Capsule Unlock Worker
@@ -427,7 +421,6 @@ A full step-by-step build plan for the personal journaling app. Work through eac
   - [ ] `lib/utils/wordCount.ts` — word count from Tiptap JSON
   - [ ] `lib/utils/streaks.ts` — streak calculation from date arrays
   - [ ] `lib/openai/parseAnalysis.ts` — JSON schema validation of OpenAI responses
-  - [ ] `lib/utils/encryption.ts` — encrypt/decrypt roundtrip for time capsule bodies
   - [ ] `lib/db/queryHelpers.ts` — query builder helpers with mocked Supabase client (skip if you do not add this module)
 
 ### 8.2 Integration Tests (Vitest + Supertest)
@@ -438,7 +431,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
   - [ ] `PATCH /api/entries/[id]` — updates entry, verifies `updated_at` changes
   - [ ] `DELETE /api/entries/[id]` — deletes entry, verifies cascade to `mood_analyses`
   - [ ] `POST /api/analysis` — verifies OpenAI mock called, `mood_analyses` row upserted
-  - [ ] `POST /api/capsules` — verifies BullMQ job enqueued, encryption applied
+  - [ ] `POST /api/capsules` — verifies BullMQ job enqueued, body persisted
   - [ ] `POST /api/uploads` — valid image uploads, non-image rejected, oversized rejected
   - [ ] `DELETE /api/uploads/[id]` — ownership check, Storage object removed
 
@@ -477,7 +470,6 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [ ] Update `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` to production Clerk keys
 - [ ] Set production webhook signing secret to the **same env var name** your app expects (`CLERK_WEBHOOK_SIGNING_SECRET` or `CLERK_WEBHOOK_SECRET`, etc. — see §1.6)
 - [ ] Confirm `SUPABASE_SERVICE_ROLE_KEY` is set and never exposed client-side
-- [ ] Set `CAPSULE_ENCRYPTION_KEY` in production (server only; see §4.5)
 
 ### 9.3 Production Webhook
 - [ ] In the Clerk dashboard add a second webhook endpoint pointing to the Railway production URL: `https://your-app.railway.app/api/webhooks/clerk`

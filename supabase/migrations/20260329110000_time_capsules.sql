@@ -1,11 +1,10 @@
--- §4.4 — Time capsules (encrypted body string per §4.5; plaintext is Tiptap JSON).
+-- §4.4 — Time capsules; `body` is plain Tiptap JSON (same model as `entries`; §4.5 encryption omitted).
 
 create table if not exists public.time_capsules (
   id uuid not null default gen_random_uuid(),
   user_id uuid not null references public.users (id) on delete cascade,
   title text not null,
-  -- Ciphertext `iv:ciphertext` (§4.5), not raw JSON in the database.
-  body text not null,
+  body jsonb not null default '{"type":"doc","content":[]}'::jsonb,
   unlock_at timestamptz not null,
   is_unlocked boolean not null default false,
   notification_sent boolean not null default false,
@@ -15,10 +14,10 @@ create table if not exists public.time_capsules (
 );
 
 comment on table public.time_capsules is
-  'User time capsules; body is encrypted at rest (§4.5).';
+  'User time capsules; body is Tiptap JSON (RLS; no app-level encryption).';
 
 comment on column public.time_capsules.body is
-  'AES-GCM payload as iv:ciphertext string (§4.5); plaintext is Tiptap JSON.';
+  'Tiptap/ProseMirror document JSON (same shape as entries.body).';
 
 create index if not exists time_capsules_unlock_at_idx
   on public.time_capsules using btree (unlock_at);
