@@ -3,6 +3,9 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
+import { MoodChart } from '@/components/charts/MoodChart'
+import { WritingPromptCard } from '@/components/dashboard/WritingPromptCard'
+
 type EntryRow = {
   id: string
   title: string
@@ -102,11 +105,12 @@ export function DashboardHome() {
   const showSearchMode = debouncedSearch.length > 0
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-10">
+      <div className="min-w-0 flex-1 flex flex-col gap-10">
       <div>
         <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">Dashboard</h1>
         <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-          Overview and quick access to your journal. Stats and mood trends arrive in later phases.
+          Overview, mood trend from recent analyses, and quick access to your journal. Stats arrive in a later phase.
         </p>
       </div>
 
@@ -147,22 +151,8 @@ export function DashboardHome() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/80 p-6 dark:border-neutral-600 dark:bg-neutral-900/40">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-            Mood chart
-          </h2>
-          <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">
-            Mood trends from AI analysis will be charted here in <span className="font-medium">Phase 5</span>.
-          </p>
-          <div className="mt-4 flex h-36 items-end justify-between gap-2 px-2">
-            {[40, 65, 45, 80, 55, 70, 50].map((h, i) => (
-              <div
-                key={i}
-                className="w-full max-w-[2rem] rounded-t bg-neutral-200 dark:bg-neutral-800"
-                style={{ height: `${h}%` }}
-              />
-            ))}
-          </div>
+        <section className="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950 sm:p-6">
+          <MoodChart />
         </section>
       </div>
 
@@ -217,6 +207,11 @@ export function DashboardHome() {
           </ul>
         )}
       </section>
+      </div>
+
+      <aside className="w-full shrink-0 lg:sticky lg:top-6 lg:w-80 xl:w-96">
+        <WritingPromptCard />
+      </aside>
     </div>
   )
 }

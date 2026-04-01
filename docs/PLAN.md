@@ -172,18 +172,18 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] *Tab close:* the browser may abort an in-flight `fetch`. Optional hardening: `navigator.sendBeacon` or `visibilitychange` / `pagehide` (watch auth headers, payload size, CORS). Accepting an occasional missed analysis is reasonable for v1. *Uses `keepalive: true` on the analysis `fetch` as light hardening; tab-close can still drop requests.*
 
 ### 3.5 Mood Chart Component
-- [ ] Install `recharts`
-- [ ] Create `components/charts/MoodChart.tsx`
-- [ ] Use a Recharts `LineChart` with entry date on the x-axis and mood score (1–10) on the y-axis
-- [ ] Color each point by `mood_label`
-- [ ] Show a tooltip on hover with the mood label and truncated summary
-- [ ] Render a skeleton during load and an empty state if fewer than 2 data points exist
-- [ ] Query the last 30 `mood_analyses` records for the user
+- [x] Install `recharts`
+- [x] Create `components/charts/MoodChart.tsx`
+- [x] Use a Recharts `LineChart` with entry date on the x-axis and mood score (1–10) on the y-axis
+- [x] Color each point by `mood_label` (`lib/mood/chart-colors.ts` + custom `dot`)
+- [x] Show a tooltip on hover with the mood label and truncated summary
+- [x] Render a skeleton during load and an empty state if fewer than 2 data points exist
+- [x] Query the last 30 `mood_analyses` records for the user (Supabase client + RLS in `MoodChart`)
 
 ### 3.6 Wire Up Dashboard
-- [ ] Add the `MoodChart` component to the dashboard
-- [ ] Add a writing prompt section in the sidebar that shows `prompt_suggestion` from the most recent mood analysis
-- [ ] Handle the case where no analysis exists yet with a default placeholder prompt
+- [x] Add the `MoodChart` component to the dashboard
+- [x] Add a writing prompt section in the sidebar that shows `prompt_suggestion` from the most recent mood analysis
+- [x] Handle the case where no analysis exists yet with a default placeholder prompt
 
 ### 3.7 Verification
 - [ ] Write an entry, navigate away, return to the dashboard — confirm a mood analysis appears on the chart
