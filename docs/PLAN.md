@@ -155,16 +155,16 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] The prompt must use JSON mode schema enforcement — specify the exact fields and value constraints (`MOOD_ANALYSIS_SYSTEM_PROMPT` + `MOOD_ANALYSIS_RESPONSE_FORMAT`; `parseMoodAnalysisJson` validates output)
 
 ### 3.3 Analysis API Route
-- [ ] Create `app/api/analysis/route.ts`
-  - [ ] `POST` — accept `{ entryId }`; validate it's a UUID; verify the entry belongs to the authed user (JWT Supabase client + RLS, or equivalent ownership check)
-  - [ ] Fetch the entry's `body_text` from Supabase
-  - [ ] **Choose one server model** (do not mix “return 202 immediately” with awaiting OpenAI in the same synchronous handler):
+- [x] Create `app/api/analysis/route.ts`
+  - [x] `POST` — accept `{ entryId }`; validate it's a UUID; verify the entry belongs to the authed user (JWT Supabase client + RLS, or equivalent ownership check)
+  - [x] Fetch the entry's `body_text` from Supabase
+  - [x] **Choose one server model** (do not mix “return 202 immediately” with awaiting OpenAI in the same synchronous handler):
     - **Option A — true async:** Return **202** right after validation, then run OpenAI + upsert inside **`after()` / `waitUntil`** (per your Next.js version) or enqueue a **BullMQ** job; document platform timeouts and that work continues after the response.
-    - **Option B — synchronous:** **Await** OpenAI + upsert, then return **200** or **202** when finished; the client may still call `fetch()` without `await` (non-blocking navigation), but the **server** does the full LLM round-trip — document **latency** and **route timeouts**.
-  - [ ] Call OpenAI `gpt-4o-mini` with `response_format: { type: 'json_object' }`; parse and upsert into `mood_analyses`
-  - [ ] Wrap OpenAI/DB work in try/catch; on failure log and return `{ status: 'failed' }` (or resolve the async task without throwing) — never leave the client with an unhandled error for expected failures
-- [ ] Add a basic in-memory rate limit: max 10 requests per user per hour keyed by Clerk `userId`
-- [ ] If you run **multiple** web instances, move that limiter to **Redis** so counts are shared (in-memory limits are per-process only)
+    - **Option B — synchronous:** **Await** OpenAI + upsert, then return **200** or **202** when finished; the client may still call `fetch()` without `await` (non-blocking navigation), but the **server** does the full LLM round-trip — document **latency** and **route timeouts**. **→ Implemented Option B** in `app/api/analysis/route.ts` (full round-trip before response; `503` if `OPENAI_API_KEY` missing; `200` + `{ status: 'failed' }` for model/parse/DB failures).
+  - [x] Call OpenAI `gpt-4o-mini` with `response_format: { type: 'json_object' }`; parse and upsert into `mood_analyses`
+  - [x] Wrap OpenAI/DB work in try/catch; on failure log and return `{ status: 'failed' }` (or resolve the async task without throwing) — never leave the client with an unhandled error for expected failures
+- [x] Add a basic in-memory rate limit: max 10 requests per user per hour keyed by Clerk `userId`
+- [x] If you run **multiple** web instances, move that limiter to **Redis** so counts are shared (in-memory limits are per-process only) — *documented in `lib/analysis/rateLimit.ts`; still in-memory for v1*
 
 ### 3.4 Navigate-Away Trigger
 - [ ] In `TiptapEditor.tsx`, add a `useEffect` cleanup function that fires a `POST` to `/api/analysis` with the `entryId` when the component unmounts
