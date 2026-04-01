@@ -247,13 +247,13 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] **Reconciliation:** delayed jobs can be **lost** on worker restarts; add a **repeatable cron** (or run on worker startup) that finds rows with `unlock_at <= now()` and `is_unlocked = false`, sets `is_unlocked` (and sends email if not yet sent), so unlocks are not only tied to a single delayed job *(startup reconcile + BullMQ `upsertJobScheduler` every 15m UTC; also picks up `is_unlocked` + `notification_sent=false` after `unlock_at`)*
 
 ### 4.8 Resend Email Setup
-- [ ] Create a Resend account and verify your sending domain
-- [ ] Install `resend` and `@react-email/components`
-- [ ] Add `RESEND_API_KEY` to `.env.local`
-- [ ] Create `lib/email/WeeklyDigestEmail.tsx` — displays week range, avg score, entry count, AI summary, insight, CTA button
-- [ ] Create `lib/email/CapsuleUnlockedEmail.tsx` — displays capsule title, unlock date, CTA link
-- [ ] Create `lib/email/send.ts` with a reusable `sendEmail()` helper
-- [ ] On Resend failures: log with context; use BullMQ retries where appropriate so transient mail errors do not silently drop unlock/digest notifications
+- [x] Create a Resend account and verify your sending domain *(domain optional for dev — use **`Journal <onboarding@resend.dev>`** + `RESEND_API_KEY`)*
+- [x] Install `resend` and `@react-email/components`
+- [x] Add `RESEND_API_KEY` to `.env.local`
+- [x] Create `lib/email/WeeklyDigestEmail.tsx` — displays week range, avg score, entry count, AI summary, insight, CTA button
+- [x] Create `lib/email/CapsuleUnlockedEmail.tsx` — displays capsule title, unlock date, CTA link
+- [x] Create `lib/email/send.ts` with a reusable `sendEmail()` helper
+- [x] On Resend failures: log with context; use BullMQ retries where appropriate so transient mail errors do not silently drop unlock/digest notifications
 
 ### 4.9 Time Capsule UI
 - [ ] Create `app/(app)/capsules/page.tsx` — list all capsules; locked ones show lock icon, title, and live countdown via `useInterval`; unlocked ones render as a normal entry card

@@ -1,8 +1,12 @@
-import { Resend } from 'resend'
+import { createElement } from 'react'
+
+import { CapsuleUnlockedEmail } from '@/lib/email/CapsuleUnlockedEmail'
+import type { SendEmailResult } from '@/lib/email/send'
+import { RESEND_ONBOARDING_FROM, sendEmail } from '@/lib/email/send'
 
 const SUBJECT = 'Your time capsule is unlocked'
 
-export type SendCapsuleUnlockedResult = { ok: true } | { ok: false; reason: string }
+export type SendCapsuleUnlockedResult = SendEmailResult
 
 function appOrigin(): string {
   const base = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, '')
@@ -10,7 +14,7 @@ function appOrigin(): string {
 }
 
 /**
- * §4.7 / §4.8 — unlock notification (plain text; React Email optional in §4.8).
+ * §4.7 / §4.8 — unlock notification (React Email). Uses `CAPSULE_UNLOCK_FROM` → `WEEKLY_DIGEST_FROM` → onboarding sender.
  */
 export async function sendCapsuleUnlockedEmail(params: {
   to: string
@@ -18,32 +22,22 @@ export async function sendCapsuleUnlockedEmail(params: {
   unlockAtIso: string
   capsuleId: string
 }): Promise<SendCapsuleUnlockedResult> {
-  const key = process.env.RESEND_API_KEY?.trim()
-  if (!key) {
-    return { ok: false, reason: 'RESEND_API_KEY not set' }
-  }
+  const capsuleUrl = `${appOrigin()}/capsules/${params.capsuleId}`
 
   const from =
     process.env.CAPSULE_UNLOCK_FROM?.trim() ||
     process.env.WEEKLY_DIGEST_FROM?.trim() ||
-    'Journal <onboarding@resend.dev>'
+    process.env.RESEND_DEFAULT_FROM?.trim() ||
+    RESEND_ONBOARDING_FROM
 
-  const link = `${appOrigin()}/capsules/${params.capsuleId}`
-  const text = `Your time capsule “${params.title.replace(/"/g, "'")}” reached its unlock time (${params.unlockAtIso}).\n\nOpen it: ${link}\n`
-
-  try {
-    const resend = new Resend(key)
-    const { error } = await resend.emails.send({
-      from,
-      to: params.to,
-      subject: SUBJECT,
-      text,
-    })
-    if (error) {
-      return { ok: false, reason: error.message }
-    }
-    return { ok: true }
-  } catch (e) {
-    return { ok: false, reason: e instanceof Error ? e.message : 'send failed' }
-  }
+  return sendEmail({
+    from,
+    to: params.to,
+    subject: SUBJECT,
+    react: createElement(CapsuleUnlockedEmail, {
+      title: params.title,
+      unlockAtIso: params.unlockAtIso,
+      capsuleUrl,
+    }),
+  })
 }

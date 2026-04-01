@@ -186,7 +186,13 @@ async function processOneUser(
 
   const emailResult = await sendWeeklyDigestEmail({
     to: user.email,
-    textBody: `${user.display_name?.trim() ? `Hi ${user.display_name.trim()},\n\n` : ''}${summary}\n\n— Journal`,
+    displayName: user.display_name,
+    weekStart: bounds.week_start,
+    weekEnd: bounds.week_end,
+    entryCount: entry_count,
+    avgScore: avg_score,
+    topMood: top_mood,
+    summary,
   })
   if (!emailResult.ok) {
     console.warn('[weekly-digest] email skipped', user.id, emailResult.reason)
