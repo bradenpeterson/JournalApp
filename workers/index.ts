@@ -3,13 +3,11 @@
  * Run locally: `REDIS_URL=... npm run worker`
  * On Railway: add a second service with start command `npm run worker` and the same env as the web app where applicable.
  */
-import { Worker } from 'bullmq'
+import { Queue, Worker } from 'bullmq'
 
 import { createBullmqConnection } from './redis-connection'
-
-/** Queue names — keep in sync with §4.3 / §4.6–4.7 when those ship. */
-export const QUEUE_WEEKLY_DIGEST = 'weekly-digest'
-export const QUEUE_TIME_CAPSULE = 'time-capsule'
+import { QUEUE_TIME_CAPSULE } from './queue-names'
+import { startWeeklyDigestWorker } from './weeklyDigest'
 
 async function main() {
   const shared = createBullmqConnection()
@@ -18,14 +16,14 @@ async function main() {
     console.error('[redis] connection error', err)
   })
 
-  const workers: Worker[] = [
-    new Worker(
-      QUEUE_WEEKLY_DIGEST,
-      async (job) => {
-        console.info(`[${QUEUE_WEEKLY_DIGEST}] stub processor (implement §4.3)`, job.id, job.name)
-      },
-      { connection: shared.duplicate() },
-    ),
+  const workers: Worker[] = []
+  const queues: Queue[] = []
+
+  const { worker: weeklyWorker, queue: weeklyQueue } = await startWeeklyDigestWorker(shared)
+  workers.push(weeklyWorker)
+  queues.push(weeklyQueue)
+
+  workers.push(
     new Worker(
       QUEUE_TIME_CAPSULE,
       async (job) => {
@@ -33,7 +31,7 @@ async function main() {
       },
       { connection: shared.duplicate() },
     ),
-  ]
+  )
 
   for (const w of workers) {
     w.on('error', (err) => {
@@ -41,11 +39,12 @@ async function main() {
     })
   }
 
-  console.info('[worker] BullMQ workers registered:', QUEUE_WEEKLY_DIGEST, QUEUE_TIME_CAPSULE)
+  console.info('[worker] BullMQ workers registered (weekly digest + time-capsule stub)')
 
   const shutdown = async (signal: string) => {
-    console.info(`[worker] ${signal} — closing workers…`)
+    console.info(`[worker] ${signal} — closing workers and queues…`)
     await Promise.all(workers.map((w) => w.close()))
+    await Promise.all(queues.map((q) => q.close()))
     await shared.quit()
     process.exit(0)
   }

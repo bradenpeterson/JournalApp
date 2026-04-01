@@ -208,17 +208,17 @@ A full step-by-step build plan for the personal journaling app. Work through eac
   - [x] RLS policy scoped to the authenticated user
 
 ### 4.3 Weekly Digest Worker
-- [ ] Create `workers/weeklyDigest.ts`
-- [ ] On worker startup, add a repeatable job to the `weekly-digest` queue with cron `0 8 * * 0` (every Sunday at 8am UTC)
-- [ ] Processor logic:
-  - [ ] Query all users from Supabase using the service role client
-  - [ ] For each user, fetch entries from the past 7 days
-  - [ ] Skip users with 0 entries
-  - [ ] Call OpenAI with the weekly insight prompt (entry summaries + scores → JSON summary + insight + avg_score)
-  - [ ] Insert result into `weekly_insights`
-  - [ ] Send email via Resend
-- [ ] If processing fails for one user, log and skip — do not fail the entire job
-- [ ] *Scale:* loading all users and calling OpenAI in one cron run can hit **Railway time/memory limits** as usage grows; later consider **batching**, **concurrency limits**, or **one job per user**
+- [x] Create `workers/weeklyDigest.ts`
+- [x] On worker startup, add a repeatable job to the `weekly-digest` queue with cron `0 8 * * 0` (every Sunday at 8am UTC) *(BullMQ `upsertJobScheduler`, id `weekly-digest-sunday-08-utc`)*
+- [x] Processor logic:
+  - [x] Query all users from Supabase using the service role client
+  - [x] For each user, fetch entries from the past 7 days
+  - [x] Skip users with 0 entries
+  - [x] Call OpenAI with the weekly insight prompt (entry summaries + scores → JSON summary + insight + avg_score) *(`avg_score` / `top_mood` computed from `mood_analyses`; LLM returns `summary` JSON only — see `lib/openai/weekly-digest-prompt.ts`)*
+  - [x] Insert result into `weekly_insights`
+  - [x] Send email via Resend
+- [x] If processing fails for one user, log and skip — do not fail the entire job
+- [ ] *Scale:* loading all users and calling OpenAI in one cron run can hit **Railway time/memory limits** as usage grows; later consider **batching**, **concurrency limits**, or **one job per user** *(still recommended for growth; not implemented in v1)*
 
 ### 4.4 Time Capsules Table Migration
 - [ ] Run the `time_capsules` table migration in Supabase:

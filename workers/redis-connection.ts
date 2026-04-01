@@ -1,10 +1,10 @@
-import IORedis from 'ioredis'
+import IORedis, { type RedisOptions } from 'ioredis'
 
 /**
  * Shared Redis client options for BullMQ (§4.1).
  * `maxRetriesPerRequest: null` is required so BullMQ can issue blocking commands.
  */
-const connectionOptions: Partial<IORedis.RedisOptions> = {
+const connectionOptions: Partial<RedisOptions> = {
   maxRetriesPerRequest: null,
   enableReadyCheck: true,
   /**
