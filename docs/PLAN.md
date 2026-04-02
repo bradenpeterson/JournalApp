@@ -271,9 +271,9 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 ## Phase 5 — Image Uploads
 
 ### 5.1 Supabase Storage Setup
-- [ ] Create a storage bucket named `entry-images` and set it to public
-- [ ] Add a Storage RLS policy: users can only upload to and delete from their own folder (`{clerk_id}/...`)
-- [ ] *Privacy:* public URLs + `{clerk_id}/{uuid}` are usually fine (UUIDv4 is hard to guess); for stricter privacy use a **private bucket** and **signed URLs** for reads
+- [x] Create a storage bucket named `entry-images` and set it to public
+- [x] Add a Storage RLS policy: users can only upload to and delete from their own folder (`{clerk_id}/...`) — versioned in `supabase/migrations/20260330160000_storage_entry_images.sql`
+- [x] *Privacy:* public URLs + `{clerk_id}/{uuid}` are usually fine (UUIDv4 is hard to guess); for stricter privacy use a **private bucket** and **signed URLs** for reads
 
 ### 5.2 Entry Images Table Migration
 - [ ] Run the `entry_images` table migration:
