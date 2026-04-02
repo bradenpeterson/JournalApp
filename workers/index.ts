@@ -1,7 +1,8 @@
 /**
  * Railway / long-running worker entry (§4.1).
- * Run locally: `REDIS_URL=... npm run worker`
- * On Railway: add a second service with start command `npm run worker` and the same env as the web app where applicable.
+ * Run locally: `npm run worker` (`scripts/run-worker.mjs` loads `.env.local` when that file exists).
+ * Needs REDIS_URL, NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY (for emails), etc.
+ * On Railway: second service with `npm run worker`; set env in the dashboard (no `.env.local` in the image).
  */
 import { Queue, Worker } from 'bullmq'
 

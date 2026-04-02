@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:e2e": "playwright test",
-    "worker": "tsx workers/index.ts"
+    "worker": "node scripts/run-worker.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.0.6",

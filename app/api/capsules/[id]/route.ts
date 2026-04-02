@@ -37,7 +37,27 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     return NextResponse.json({ error: 'Capsule not found' }, { status: 404 })
   }
 
-  const row = data as CapsuleRow
+  let row = data as CapsuleRow
+
+  /** If the worker never ran (local dev, Redis mismatch), still flip the row once due (RLS allows own-row update). */
+  if (!row.is_unlocked && new Date(row.unlock_at).getTime() <= Date.now()) {
+    const { error: upErr } = await supabase
+      .from('time_capsules')
+      .update({ is_unlocked: true })
+      .eq('id', id)
+      .eq('is_unlocked', false)
+
+    if (!upErr) {
+      const { data: refreshed, error: reloadErr } = await supabase
+        .from('time_capsules')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle()
+      if (!reloadErr && refreshed) {
+        row = refreshed as CapsuleRow
+      }
+    }
+  }
 
   if (row.is_unlocked) {
     return NextResponse.json({

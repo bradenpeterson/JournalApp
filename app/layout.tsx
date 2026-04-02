@@ -37,6 +37,9 @@ export default function RootLayout({
                 <Link href="/entries" className="hover:text-violet-600 dark:hover:text-violet-400">
                   Entries
                 </Link>
+                <Link href="/capsules" className="hover:text-violet-600 dark:hover:text-violet-400">
+                  Capsules
+                </Link>
               </nav>
             </Show>
             <div className="ml-auto flex items-center gap-4">

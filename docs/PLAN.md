@@ -256,9 +256,9 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] On Resend failures: log with context; use BullMQ retries where appropriate so transient mail errors do not silently drop unlock/digest notifications
 
 ### 4.9 Time Capsule UI
-- [ ] Create `app/(app)/capsules/page.tsx` — list all capsules; locked ones show lock icon, title, and live countdown via `useInterval`; unlocked ones render as a normal entry card
-- [ ] Create `app/(app)/capsules/new/page.tsx` — form with title, body (Tiptap editor), and date picker for `unlock_at`
-- [ ] Locked capsule body is never rendered on the client — the API redacts it
+- [x] Create `app/(app)/capsules/page.tsx` — list all capsules; locked ones show lock icon, title, and live countdown via `useInterval`; unlocked ones render as a normal entry card
+- [x] Create `app/(app)/capsules/new/page.tsx` — form with title, body (Tiptap editor), and date picker for `unlock_at`
+- [x] Locked capsule body is never rendered on the client — the API redacts it *(list + `app/(app)/capsules/[id]/page.tsx` show no `body` when locked; optional detail route for email links)*
 
 ### 4.10 Verification
 - [ ] Create a time capsule with an unlock date 2 minutes in the future — confirm it appears locked

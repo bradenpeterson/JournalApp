@@ -112,6 +112,23 @@ export function DashboardHome() {
         <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
           Overview, mood trend from recent analyses, and quick access to your journal. Stats arrive in a later phase.
         </p>
+        <nav
+          className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm"
+          aria-label="Quick links"
+        >
+          <Link
+            href="/entries/new"
+            className="font-medium text-violet-600 underline-offset-2 hover:underline dark:text-violet-400"
+          >
+            New entry
+          </Link>
+          <Link
+            href="/capsules"
+            className="font-medium text-violet-600 underline-offset-2 hover:underline dark:text-violet-400"
+          >
+            Time capsules
+          </Link>
+        </nav>
       </div>
 
       <section className="flex flex-col gap-2">
