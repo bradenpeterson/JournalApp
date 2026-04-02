@@ -276,10 +276,10 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] *Privacy:* public URLs + `{clerk_id}/{uuid}` are usually fine (UUIDv4 is hard to guess); for stricter privacy use a **private bucket** and **signed URLs** for reads
 
 ### 5.2 Entry Images Table Migration
-- [ ] Run the `entry_images` table migration:
-  - [ ] `id`, `user_id`, `entry_id` (nullable), `storage_path`, `public_url`, `file_name`, `file_size`, `mime_type`, `created_at`
-  - [ ] RLS policy scoped to authenticated user
-  - [ ] B-tree indexes on `entry_id` and `user_id`
+- [x] Run the `entry_images` table migration:
+  - [x] `id`, `user_id`, `entry_id` (nullable), `storage_path`, `public_url`, `file_name`, `file_size`, `mime_type`, `created_at` — `supabase/migrations/20260330161000_entry_images.sql`
+  - [x] RLS policy scoped to authenticated user
+  - [x] B-tree indexes on `entry_id` and `user_id`
 
 ### 5.3 Upload API Routes
 - [ ] Install `file-type` package for MIME verification from buffer
