@@ -1,4 +1,5 @@
 import { generateHTML, type JSONContent } from '@tiptap/core'
+import Image from '@tiptap/extension-image'
 import Typography from '@tiptap/extension-typography'
 import StarterKit from '@tiptap/starter-kit'
 
@@ -8,6 +9,7 @@ const extensions = [
     heading: { levels: [1, 2, 3] },
   }),
   Typography,
+  Image.configure({ inline: false }),
 ]
 
 /**

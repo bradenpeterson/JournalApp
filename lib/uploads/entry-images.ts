@@ -12,6 +12,9 @@ export const ALLOWED_IMAGE_MIME_TYPES = [
 
 export type AllowedImageMime = (typeof ALLOWED_IMAGE_MIME_TYPES)[number]
 
+/** `accept` attribute for `<input type="file">`. */
+export const IMAGE_ACCEPT = ALLOWED_IMAGE_MIME_TYPES.join(',')
+
 export function isAllowedImageMime(mime: string): mime is AllowedImageMime {
   return (ALLOWED_IMAGE_MIME_TYPES as readonly string[]).includes(mime)
 }

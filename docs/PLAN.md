@@ -294,12 +294,12 @@ A full step-by-step build plan for the personal journaling app. Work through eac
   - [x] `DELETE` — verify ownership, delete from Supabase Storage, delete `entry_images` row
 
 ### 5.4 Tiptap Image Extension
-- [ ] Install `@tiptap/extension-image`
-- [ ] Add the `Image` extension to the editor's extension list
-- [ ] Add an image upload button to the Tiptap toolbar
-- [ ] On file select: validate type and size client-side, POST to `/api/uploads`, on success call `editor.chain().focus().setImage({ src: publicUrl, alt: fileName }).run()`
-- [ ] Show a loading spinner on the toolbar button during upload
-- [ ] On failure show a toast error and reset the button — do not modify editor state
+- [x] Install `@tiptap/extension-image`
+- [x] Add the `Image` extension to the editor's extension list
+- [x] Add an image upload button to the Tiptap toolbar
+- [x] On file select: validate type and size client-side, POST to `/api/uploads`, on success call `editor.chain().focus().setImage({ src: publicUrl, alt: fileName }).run()`
+- [x] Show a loading spinner on the toolbar button during upload
+- [x] On failure show a toast error and reset the button — do not modify editor state *(inline `role="alert"`; file input cleared — no toast dependency)*
 
 ### 5.5 Verification
 - [ ] Upload an image inside an entry — confirm it renders inline
