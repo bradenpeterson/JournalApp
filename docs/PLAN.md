@@ -261,10 +261,10 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Locked capsule body is never rendered on the client — the API redacts it *(list + `app/(app)/capsules/[id]/page.tsx` show no `body` when locked; optional detail route for email links)*
 
 ### 4.10 Verification
-- [ ] Create a time capsule with an unlock date 2 minutes in the future — confirm it appears locked
-- [ ] Wait for the BullMQ job to fire — confirm `is_unlocked` flips to true in Supabase and an email arrives
-- [ ] Confirm the weekly digest cron is registered in Redis (inspect via BullMQ's job list)
-- [ ] Confirm a failed worker job does not crash the worker process
+- [x] Create a time capsule with an unlock date 2 minutes in the future — confirm it appears locked
+- [x] Wait for the BullMQ job to fire — confirm `is_unlocked` flips to true in Supabase and an email arrives
+- [x] Confirm the weekly digest cron is registered in Redis (worker log `[weekly-digest] scheduler upserted: …`, or Redis / Bull Board)
+- [x] Confirm a failed worker job does not crash the worker process *(BullMQ failed jobs + worker stays up; startup reconcile errors are caught in `timeCapsule.ts`)*
 
 ---
 
