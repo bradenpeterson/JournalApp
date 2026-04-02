@@ -282,16 +282,16 @@ A full step-by-step build plan for the personal journaling app. Work through eac
   - [x] B-tree indexes on `entry_id` and `user_id`
 
 ### 5.3 Upload API Routes
-- [ ] Install `file-type` package for MIME verification from buffer
-- [ ] Create `app/api/uploads/route.ts`:
-  - [ ] `POST` — accept `multipart/form-data` with image file and `entryId`
-  - [ ] Validate MIME type from buffer (not headers): allow only `image/jpeg`, `image/png`, `image/webp`, `image/gif` (`file-type` reads the buffer — acceptable while the **5MB** cap holds)
-  - [ ] Reject files over 5MB with a 413
-  - [ ] Upload to Supabase Storage at path `{clerk_id}/{uuid}.{ext}`
-  - [ ] Insert row into `entry_images`
-  - [ ] Return `{ publicUrl, imageId }`
-- [ ] Create `app/api/uploads/[id]/route.ts`:
-  - [ ] `DELETE` — verify ownership, delete from Supabase Storage, delete `entry_images` row
+- [x] Install `file-type` package for MIME verification from buffer
+- [x] Create `app/api/uploads/route.ts`:
+  - [x] `POST` — accept `multipart/form-data` with image file and `entryId`
+  - [x] Validate MIME type from buffer (not headers): allow only `image/jpeg`, `image/png`, `image/webp`, `image/gif` (`file-type` reads the buffer — acceptable while the **5MB** cap holds)
+  - [x] Reject files over 5MB with a 413
+  - [x] Upload to Supabase Storage at path `{clerk_id}/{uuid}.{ext}`
+  - [x] Insert row into `entry_images`
+  - [x] Return `{ publicUrl, imageId }`
+- [x] Create `app/api/uploads/[id]/route.ts`:
+  - [x] `DELETE` — verify ownership, delete from Supabase Storage, delete `entry_images` row
 
 ### 5.4 Tiptap Image Extension
 - [ ] Install `@tiptap/extension-image`
