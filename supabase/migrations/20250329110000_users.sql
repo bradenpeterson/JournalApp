@@ -8,7 +8,7 @@ create table if not exists public.users (
   clerk_id text not null,
   email text not null,
   display_name text null,
-  theme text null default 'light',
+  theme text null default 'system',
   created_at timestamp with time zone null default now(),
   constraint users_pkey primary key (id),
   constraint users_clerk_id_key unique (clerk_id)

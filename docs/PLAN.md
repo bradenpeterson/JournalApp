@@ -320,12 +320,12 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Show skeleton loaders while fetching — `Suspense` + `DashboardStatsSkeleton`
 
 ### 6.2 Light / Dark Mode
-- [ ] Set Tailwind `darkMode` to `class` strategy
-- [ ] Store the user's theme preference in `users.theme` in Supabase
-- [ ] On login, read the preference and apply the `dark` class to `<html>`
-- [ ] Persist preference in `localStorage` for instant application before the DB call resolves
-- [ ] Add a toggle button in the nav and in `/settings`
-- [ ] When the user toggles theme: update `users.theme` via an API route **and** update `localStorage` **and** the `dark` class on `<html>` so all three stay in sync
+- [x] Set Tailwind `darkMode` to `class` strategy (`@custom-variant dark` in `app/globals.css` — Tailwind v4)
+- [x] Store the user's theme preference in `users.theme` in Supabase (`light` | `dark` | `system`)
+- [x] On login, read the preference and apply the `dark` class to `<html>` (`ThemeProvider` + `GET /api/user/theme`)
+- [x] Persist preference in `localStorage` for instant application before the DB call resolves (`journal-theme` key + inline head script)
+- [x] Add a toggle button in the nav and in `/settings` (`ThemeSegmentedControl` + `app/(app)/settings/page.tsx`)
+- [x] When the user toggles theme: update `users.theme` via an API route **and** update `localStorage` **and** the `dark` class on `<html>` so all three stay in sync (`PATCH /api/user/theme`)
 
 ### 6.3 Settings Page
 - [ ] Create `app/(app)/settings/page.tsx`
