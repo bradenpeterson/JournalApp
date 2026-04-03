@@ -348,11 +348,8 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] *Scale:* long jobs use worker **`lockDuration` 45m**; per-image raw download cap **80MB** (placeholder if larger) to avoid OOM; final PDF read into memory once for upload — acceptable on Railway-style workers; for multi‑GB PDFs consider streaming upload / multipart later
 - [ ] Note: client-side `window.print()` fallback *(optional; not implemented)*
 
-### 6.6 Responsive Layout Pass
-- [ ] Dashboard sidebar collapses to a bottom sheet on mobile (below `md` breakpoint)
-- [ ] Tiptap toolbar collapses to icon-only below `sm` (640px)
-- [ ] Navigation collapses to a hamburger menu below `md` (768px)
-- [ ] Test all pages at 375px, 768px, and 1280px widths
+### 6.6 Responsive layout pass
+**Deferred** — skip until Phase 7 mockup UI is implemented so breakpoints and component structure are stable. The concrete tasks live under **§7.9**.
 
 ---
 
@@ -408,6 +405,12 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [ ] Journaling preferences toggles
 - [ ] Journey stats sidebar card
 - [ ] Export buttons
+
+### 7.9 Responsive layout pass *(was §6.6 — do after core mockup UI)*
+- [ ] Dashboard sidebar collapses to a bottom sheet on mobile (below `md` breakpoint)
+- [ ] Tiptap toolbar collapses to icon-only below `sm` (640px)
+- [ ] Navigation collapses to a hamburger menu below `md` (768px)
+- [ ] Test all pages at 375px, 768px, and 1280px widths
 
 ---
 
