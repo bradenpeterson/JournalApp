@@ -328,24 +328,24 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] When the user toggles theme: update `users.theme` via an API route **and** update `localStorage` **and** the `dark` class on `<html>` so all three stay in sync (`PATCH /api/user/theme`)
 
 ### 6.3 Settings Page
-- [ ] Create `app/(app)/settings/page.tsx`
-- [ ] Display account info (email, display name) pulled from Clerk
-- [ ] Theme toggle
-- [ ] Export buttons (JSON and PDF)
-- [ ] Notification preferences — **persist** flags (e.g. columns on `users` or a `notification_settings` table: weekly digest on/off, capsule unlock email on/off) and have workers read them before sending
+- [x] Create `app/(app)/settings/page.tsx`
+- [x] Display account info (email, display name) pulled from Clerk
+- [x] Theme toggle
+- [x] Export buttons (JSON and PDF)
+- [x] Notification preferences — **persist** flags (e.g. columns on `users` or a `notification_settings` table: weekly digest on/off, capsule unlock email on/off) and have workers read them before sending (`notify_*` on `users`, `GET`/`PATCH` `/api/user/notifications`, `workers/weeklyDigest.ts` + `workers/timeCapsule.ts`)
 
 ### 6.4 JSON Export
-- [ ] Create `app/api/export/json/route.ts`
-- [ ] Fetch all entries with joined `mood_analyses` and `entry_images` for the authenticated user
-- [ ] Return as a structured JSON file download with `Content-Disposition: attachment` header
-- [ ] Shape: `{ exported_at, user, entries: [{ id, title, body_text, word_count, created_at, updated_at, mood, images }] }`
+- [x] Create `app/api/export/json/route.ts`
+- [x] Fetch all entries with joined `mood_analyses` and `entry_images` for the authenticated user
+- [x] Return as a structured JSON file download with `Content-Disposition: attachment` header
+- [x] Shape: `{ exported_at, user, entries: [{ id, title, body_text, word_count, created_at, updated_at, mood, images }] }`
 
 ### 6.5 PDF Export
-- [ ] Spike `@react-pdf/renderer` early in this phase — Next.js bundling sometimes needs extra config; discovering that late is painful
-- [ ] Create `app/api/export/pdf/route.ts`
-- [ ] Install `@react-pdf/renderer`
-- [ ] Render entries chronologically with title, date, body text, and mood score per page
-- [ ] For entries with images, fetch image buffers server-side and embed as base64
+- [x] Spike `@react-pdf/renderer` early in this phase — Next.js bundling sometimes needs extra config; discovering that late is painful
+- [x] Create `app/api/export/pdf/route.ts` (`route.tsx` + `lib/export/journal-pdf-document.tsx`)
+- [x] Install `@react-pdf/renderer`
+- [x] Render entries chronologically with title, date, body text, and mood score per page
+- [ ] For entries with images, fetch image buffers server-side and embed as base64 *(PDF lists image file names only for now)*
 - [ ] If an image fetch fails, render a placeholder and continue — do not abort the export
 - [ ] *Scale:* large journals + **base64 images** can **OOM** or hit **serverless timeouts**; consider **entry/page limits**, **streaming**, or splitting exports if needed
 - [ ] Note: if `@react-pdf/renderer` proves too complex, fall back to a client-side `window.print()` on a formatted hidden div

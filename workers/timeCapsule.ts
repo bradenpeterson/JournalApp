@@ -73,11 +73,21 @@ export async function processTimeCapsuleUnlock(
 
   const { data: user, error: userErr } = await supabase
     .from('users')
-    .select('email, display_name')
+    .select('email, display_name, notify_capsule_unlock')
     .eq('id', row.user_id)
     .maybeSingle()
 
   if (userErr) throw userErr
+
+  const notifyUnlock = (user as { notify_capsule_unlock?: boolean | null } | null)?.notify_capsule_unlock
+  if (notifyUnlock === false) {
+    const { error: markErr } = await supabase
+      .from('time_capsules')
+      .update({ notification_sent: true })
+      .eq('id', capsuleId)
+    if (markErr) throw markErr
+    return
+  }
 
   const to = typeof user?.email === 'string' ? user.email.trim() : ''
   if (!to) {

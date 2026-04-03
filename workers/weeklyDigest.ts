@@ -27,7 +27,12 @@ const MODEL = 'gpt-4o-mini' as const
 const PAGE_SIZE = 500
 const BODY_PREVIEW = 800
 
-type UserRow = { id: string; email: string; display_name: string | null }
+type UserRow = {
+  id: string
+  email: string
+  display_name: string | null
+  notify_weekly_digest: boolean | null
+}
 
 type EntryWithMood = {
   id: string
@@ -88,7 +93,7 @@ async function fetchAllUsers(supabase: SupabaseClient): Promise<UserRow[]> {
   for (let from = 0; ; from += PAGE_SIZE) {
     const { data, error } = await supabase
       .from('users')
-      .select('id, email, display_name')
+      .select('id, email, display_name, notify_weekly_digest')
       .order('id', { ascending: true })
       .range(from, from + PAGE_SIZE - 1)
 
@@ -120,6 +125,8 @@ async function processOneUser(
   user: UserRow,
   bounds: ReturnType<typeof weekWindow>,
 ): Promise<void> {
+  if (user.notify_weekly_digest === false) return
+
   const { data: entries, error: entErr } = await supabase
     .from('entries')
     .select('id, title, body_text, updated_at, mood_analyses(score, mood_label, summary)')
