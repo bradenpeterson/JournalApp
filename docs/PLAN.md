@@ -313,11 +313,11 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 ## Phase 6 — Polish & Export
 
 ### 6.1 Dashboard Stats
-- [ ] Calculate and display: current writing streak, longest streak, total entries, total word count
-- [ ] Create `lib/utils/streaks.ts` — takes an array of entry dates and returns current and longest streak
-- [ ] **Before implementing** `streaks.ts` and dashboard stats, **decide and document** how a "day" is defined (**UTC calendar date** vs **user's local timezone**); wire the same rule into tests — late-night local writes can split streaks if you use UTC naively
-- [ ] Fetch stats server-side on the dashboard page and pass as props
-- [ ] Show skeleton loaders while fetching
+- [x] Calculate and display: current writing streak, longest streak, total entries, total word count
+- [x] Create `lib/utils/streaks.ts` — takes an array of entry dates and returns current and longest streak
+- [x] **Before implementing** `streaks.ts` and dashboard stats, **decide and document** how a "day" is defined (**UTC calendar date** vs **user's local timezone**); wire the same rule into tests — late-night local writes can split streaks if you use UTC naively *(UTC `created_at`; `npm run test:unit`)*
+- [x] Fetch stats server-side on the dashboard page and pass as props — `lib/dashboard/load-dashboard-stats.ts` + `app/(app)/dashboard/page.tsx`
+- [x] Show skeleton loaders while fetching — `Suspense` + `DashboardStatsSkeleton`
 
 ### 6.2 Light / Dark Mode
 - [ ] Set Tailwind `darkMode` to `class` strategy

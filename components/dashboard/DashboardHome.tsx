@@ -4,7 +4,9 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 import { MoodChart } from '@/components/charts/MoodChart'
+import { DashboardStatsDisplay, DashboardStatsSkeleton } from '@/components/dashboard/DashboardStats'
 import { WritingPromptCard } from '@/components/dashboard/WritingPromptCard'
+import type { DashboardStats } from '@/lib/dashboard/load-dashboard-stats'
 
 type EntryRow = {
   id: string
@@ -36,7 +38,7 @@ function formatUpdatedAt(iso: string) {
   }
 }
 
-export function DashboardHome() {
+export function DashboardHome({ stats }: { stats?: DashboardStats | null } = {}) {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [recent, setRecent] = useState<EntryRow[]>([])
@@ -110,7 +112,7 @@ export function DashboardHome() {
       <div>
         <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">Dashboard</h1>
         <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-          Overview, mood trend from recent analyses, and quick access to your journal. Stats arrive in a later phase.
+          Overview, writing stats, mood trend from recent analyses, and quick access to your journal.
         </p>
         <nav
           className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm"
@@ -154,19 +156,7 @@ export function DashboardHome() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/80 p-6 dark:border-neutral-600 dark:bg-neutral-900/40">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-            Stats
-          </h2>
-          <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">
-            Writing streaks, totals, and summaries will appear here in{' '}
-            <span className="font-medium">Phase 3</span> and <span className="font-medium">Phase 5</span>.
-          </p>
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="h-16 rounded-lg bg-neutral-200/80 dark:bg-neutral-800/80" />
-            <div className="h-16 rounded-lg bg-neutral-200/80 dark:bg-neutral-800/80" />
-          </div>
-        </section>
+        {stats != null ? <DashboardStatsDisplay stats={stats} /> : <DashboardStatsSkeleton />}
 
         <section className="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950 sm:p-6">
           <MoodChart />

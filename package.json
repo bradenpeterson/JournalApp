@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:e2e": "playwright test",
+    "test:unit": "tsx lib/utils/streaks.test.ts",
     "worker": "node scripts/run-worker.mjs"
   },
   "dependencies": {
