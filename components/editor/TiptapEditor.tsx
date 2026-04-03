@@ -94,7 +94,7 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
           method: 'DELETE',
           credentials: 'same-origin',
         })
-        if (!res.ok) failed.push(id)
+        if (!res.ok && res.status !== 404) failed.push(id)
       } catch {
         failed.push(id)
       }

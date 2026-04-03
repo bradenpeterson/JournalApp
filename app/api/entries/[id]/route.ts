@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { getSupabaseAuthContext } from '@/lib/db/supabase-auth-context'
+import { reconcileEntryImagesForSavedBody } from '@/lib/uploads/reconcile-entry-images'
 import { isUuid } from '@/lib/utils/uuid'
 import { wordCountFromPlainText } from '@/lib/utils/wordCount'
 
@@ -140,6 +141,10 @@ export async function PATCH(
 
   if (!data) {
     return NextResponse.json({ error: 'Entry not found' }, { status: 404 })
+  }
+
+  if ('body' in patch) {
+    await reconcileEntryImagesForSavedBody(supabase, id, patch.body)
   }
 
   return NextResponse.json(data)
