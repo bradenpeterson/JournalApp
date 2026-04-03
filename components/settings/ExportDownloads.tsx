@@ -42,7 +42,16 @@ export function ExportDownloads() {
           setPdfPhase('idle')
           setPdfMessage(null)
           setPdfLinkFallback(null)
-          const opened = window.open(body.downloadUrl, '_blank', 'noopener,noreferrer')
+          // Do not pass `noopener` in windowFeatures: browsers then return `null` from
+          // window.open even when the tab opened, which looks like a pop-up block.
+          const opened = window.open(body.downloadUrl, '_blank')
+          if (opened) {
+            try {
+              opened.opener = null
+            } catch {
+              /* ignore */
+            }
+          }
           if (opened == null) {
             setPdfLinkFallback(body.downloadUrl)
             setPdfMessage('Pop-up blocked. Use the link below to open your PDF in a new tab.')

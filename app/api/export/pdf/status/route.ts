@@ -8,6 +8,11 @@ import { getSupabaseAuthContext } from '@/lib/db/supabase-auth-context'
 
 const SIGNED_URL_SECONDS = 3600
 
+function journalPdfDownloadName(): string {
+  const day = new Date().toISOString().slice(0, 10)
+  return `journal-export-${day}.pdf`
+}
+
 function safeJobId(raw: string | null): string | null {
   if (!raw || raw.length > 80) return null
   if (!/^[a-zA-Z0-9:_-]+$/.test(raw)) return null
@@ -48,7 +53,9 @@ export async function GET(req: Request) {
     const supabase = createServiceRoleClient()
     const { data: signed, error: signErr } = await supabase.storage
       .from(result.bucket)
-      .createSignedUrl(result.objectPath, SIGNED_URL_SECONDS)
+      .createSignedUrl(result.objectPath, SIGNED_URL_SECONDS, {
+        download: journalPdfDownloadName(),
+      })
 
     if (signErr || !signed?.signedUrl) {
       console.error('[export/pdf status] signed url', signErr)
