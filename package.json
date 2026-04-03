@@ -14,7 +14,6 @@
   "dependencies": {
     "@clerk/nextjs": "^7.0.6",
     "@react-email/components": "^1.0.11",
-    "@react-pdf/renderer": "^4.3.2",
     "@supabase/supabase-js": "^2.99.3",
     "@tiptap/extension-character-count": "^3.22.0",
     "@tiptap/extension-image": "^3.22.1",
@@ -28,10 +27,12 @@
     "jsdom": "^29.0.1",
     "next": "16.2.0",
     "openai": "^6.33.0",
+    "pdfkit": "^0.18.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^3.8.1",
     "resend": "^6.10.0",
+    "sharp": "^0.34.5",
     "svix": "^1.89.0"
   },
   "devDependencies": {
@@ -39,6 +40,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/jsdom": "^28.0.1",
     "@types/node": "^20",
+    "@types/pdfkit": "^0.17.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

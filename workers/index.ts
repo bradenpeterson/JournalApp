@@ -7,6 +7,7 @@
 import { Queue, Worker } from 'bullmq'
 
 import { createBullmqConnection } from './redis-connection'
+import { startPdfExportWorker } from './pdfExport'
 import { startTimeCapsuleWorker } from './timeCapsule'
 import { startWeeklyDigestWorker } from './weeklyDigest'
 
@@ -28,13 +29,16 @@ async function main() {
   workers.push(capsuleWorker)
   queues.push(capsuleQueue)
 
+  const { worker: pdfWorker } = await startPdfExportWorker(shared)
+  workers.push(pdfWorker)
+
   for (const w of workers) {
     w.on('error', (err) => {
       console.error(`[worker:${w.name}]`, err)
     })
   }
 
-  console.info('[worker] BullMQ workers registered (weekly digest + time capsule)')
+  console.info('[worker] BullMQ workers registered (weekly digest + time capsule + PDF export)')
 
   const shutdown = async (signal: string) => {
     console.info(`[worker] ${signal} — closing workers and queues…`)

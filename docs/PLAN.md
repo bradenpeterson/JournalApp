@@ -341,14 +341,12 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] Shape: `{ exported_at, user, entries: [{ id, title, body_text, word_count, created_at, updated_at, mood, images }] }`
 
 ### 6.5 PDF Export
-- [x] Spike `@react-pdf/renderer` early in this phase — Next.js bundling sometimes needs extra config; discovering that late is painful
-- [x] Create `app/api/export/pdf/route.ts` (`route.tsx` + `lib/export/journal-pdf-document.tsx`)
-- [x] Install `@react-pdf/renderer`
-- [x] Render entries chronologically with title, date, body text, and mood score per page
-- [ ] For entries with images, fetch image buffers server-side and embed as base64 *(PDF lists image file names only for now)*
-- [ ] If an image fetch fails, render a placeholder and continue — do not abort the export
-- [ ] *Scale:* large journals + **base64 images** can **OOM** or hit **serverless timeouts**; consider **entry/page limits**, **streaming**, or splitting exports if needed
-- [ ] Note: if `@react-pdf/renderer` proves too complex, fall back to a client-side `window.print()` on a formatted hidden div
+- [x] Spike `@react-pdf/renderer` early in this phase — superseded by **async worker PDF** (no serverless time/memory wall for huge journals)
+- [x] **`POST /api/export/pdf`** enqueues BullMQ job; **`GET /api/export/pdf/status?jobId=`** returns signed download URL when done (`lib/bullmq/pdf-export-queue.ts`)
+- [x] Worker: **`pdfkit` + `sharp`** (`workers/pdfExport.ts`, `lib/export/pdf-worker-image.ts`) — paginated DB reads, stream PDF to temp file, upload to private bucket **`journal-exports`**, embed all images (rasterized to JPEG via Sharp; failures → inline note)
+- [x] Requires **`REDIS_URL`** on Next + **`npm run worker`**; migration `20260403120000_storage_journal_exports.sql`
+- [x] *Scale:* long jobs use worker **`lockDuration` 45m**; per-image raw download cap **80MB** (placeholder if larger) to avoid OOM; final PDF read into memory once for upload — acceptable on Railway-style workers; for multi‑GB PDFs consider streaming upload / multipart later
+- [ ] Note: client-side `window.print()` fallback *(optional; not implemented)*
 
 ### 6.6 Responsive Layout Pass
 - [ ] Dashboard sidebar collapses to a bottom sheet on mobile (below `md` breakpoint)
