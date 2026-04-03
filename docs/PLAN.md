@@ -302,11 +302,11 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 - [x] On failure show a toast error and reset the button — do not modify editor state *(inline `role="alert"`; file input cleared — no toast dependency)*
 
 ### 5.5 Verification
-- [ ] Upload an image inside an entry — confirm it renders inline
-- [ ] Navigate away and back — confirm the image persists
-- [ ] Confirm uploading a non-image file is rejected
-- [ ] Confirm uploading a file over 5MB is rejected
-- [ ] Delete an image from within the editor — confirm it's removed from Supabase Storage
+- [x] Upload an image inside an entry — confirm it renders inline
+- [x] Navigate away and back — confirm the image persists
+- [x] Confirm uploading a non-image file is rejected
+- [x] Confirm uploading a file over 5MB is rejected
+- [x] Delete an image from within the editor — confirm it's removed from Supabase Storage
 
 ---
 

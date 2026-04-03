@@ -1,14 +1,18 @@
 'use client'
 
 import CharacterCount from '@tiptap/extension-character-count'
-import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
 import Typography from '@tiptap/extension-typography'
 import type { Editor, JSONContent } from '@tiptap/core'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import {
+  createEntryImagePendingDeleteSync,
+  EntryImage,
+  SKIP_ENTRY_IMAGE_CLEANUP_META,
+} from '@/lib/editor/entry-image'
 import {
   IMAGE_ACCEPT,
   isAllowedImageMime,
@@ -58,6 +62,8 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
   const [imageUploadBusy, setImageUploadBusy] = useState(false)
   const [imageUploadError, setImageUploadError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  /** Captured on toolbar mousedown — after the file dialog, `insertContent` would otherwise use a bad selection and replace the whole doc. */
+  const savedImageInsertRangeRef = useRef<{ from: number; to: number } | null>(null)
 
   const entryIdRef = useRef(entryId)
   entryIdRef.current = entryId
@@ -68,6 +74,36 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const savingRef = useRef(false)
   const pendingAgainRef = useRef(false)
+  /** `entryImageId`s no longer in the doc; delete from Storage after PATCH succeeds (undo clears these). */
+  const pendingImageDeletesRef = useRef<Set<string>>(new Set())
+
+  const entryImagePendingSyncExtension = useMemo(
+    () => createEntryImagePendingDeleteSync(pendingImageDeletesRef),
+    [],
+  )
+
+  const flushPendingImageDeletes = useCallback(async () => {
+    const pending = pendingImageDeletesRef.current
+    if (pending.size === 0) return
+    const ids = [...pending]
+    pending.clear()
+    const failed: string[] = []
+    for (const id of ids) {
+      try {
+        const res = await fetch(`/api/uploads/${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          credentials: 'same-origin',
+        })
+        if (!res.ok) failed.push(id)
+      } catch {
+        failed.push(id)
+      }
+    }
+    for (const id of failed) pending.add(id)
+  }, [])
+
+  const flushPendingImageDeletesRef = useRef(flushPendingImageDeletes)
+  flushPendingImageDeletesRef.current = flushPendingImageDeletes
 
   const scheduleDebouncedSave = useCallback(() => {
     if (debounceTimerRef.current) {
@@ -103,6 +139,7 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
       if (!res.ok) {
         throw new Error(`PATCH ${res.status}`)
       }
+      await flushPendingImageDeletes()
       setSaveState('saved')
     } catch {
       setSaveState('error')
@@ -113,7 +150,7 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
         void performSave()
       }
     }
-  }, [])
+  }, [flushPendingImageDeletes])
 
   const performSaveRef = useRef(performSave)
   performSaveRef.current = performSave
@@ -142,7 +179,11 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
         form.set('entryId', entryIdRef.current)
 
         const res = await fetch('/api/uploads', { method: 'POST', body: form })
-        const body = (await res.json().catch(() => null)) as { error?: string; publicUrl?: string } | null
+        const body = (await res.json().catch(() => null)) as {
+          error?: string
+          publicUrl?: string
+          imageId?: string
+        } | null
 
         if (!res.ok) {
           const msg =
@@ -154,13 +195,27 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
         }
 
         const publicUrl = body && typeof body === 'object' && typeof body.publicUrl === 'string' ? body.publicUrl : ''
-        if (!publicUrl) {
+        const imageId = body && typeof body === 'object' && typeof body.imageId === 'string' ? body.imageId : ''
+        if (!publicUrl || !imageId) {
           setImageUploadError('Upload succeeded but response was invalid.')
           return
         }
 
         const alt = file.name.replace(/^.*[/\\]/, '').trim() || 'Image'
-        ed.chain().focus().setImage({ src: publicUrl, alt }).run()
+        const saved = savedImageInsertRangeRef.current
+        savedImageInsertRangeRef.current = null
+        const range =
+          saved != null
+            ? saved
+            : { from: ed.state.selection.from, to: ed.state.selection.to }
+
+        ed.chain()
+          .focus()
+          .insertContentAt(range, {
+            type: 'image',
+            attrs: { src: publicUrl, alt, entryImageId: imageId },
+          })
+          .run()
       } catch {
         setImageUploadError('Could not upload image. Try again.')
       } finally {
@@ -181,10 +236,8 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
         }),
         CharacterCount,
         Typography,
-        Image.configure({
-          inline: false,
-          allowBase64: false,
-        }),
+        EntryImage,
+        entryImagePendingSyncExtension,
       ],
       content: EMPTY_DOC,
       immediatelyRender: false,
@@ -204,7 +257,7 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
         scheduleDebouncedSave()
       },
     },
-    [entryId, scheduleDebouncedSave]
+    [entryId, scheduleDebouncedSave, entryImagePendingSyncExtension]
   )
 
   useEffect(() => {
@@ -227,7 +280,11 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
 
     if (json === null) return
 
-    editor.commands.setContent(JSON.parse(json) as JSONContent, { emitUpdate: false })
+    editor
+      .chain()
+      .setMeta(SKIP_ENTRY_IMAGE_CLEANUP_META, true)
+      .setContent(JSON.parse(json) as JSONContent, { emitUpdate: false })
+      .run()
     lastPayloadByEntryIdRef.current.set(entryIdRef.current, buildPatchPayload(editor))
   }, [editor, initialDoc])
 
@@ -268,9 +325,13 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
         keepalive: true,
-      }).finally(() => {
-        postAnalysis()
       })
+        .then(async (res) => {
+          if (res.ok) await flushPendingImageDeletesRef.current()
+        })
+        .finally(() => {
+          postAnalysis()
+        })
     }
   }, [entryId])
 
@@ -314,6 +375,21 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
             aria-busy={imageUploadBusy}
             aria-label="Insert image"
             title="Insert image"
+            onMouseDown={(e) => {
+              const ed = editorRef.current
+              if (ed && !ed.isDestroyed) {
+                const { from, to } = ed.state.selection
+                savedImageInsertRangeRef.current = { from, to }
+              }
+              e.preventDefault()
+            }}
+            onFocus={() => {
+              const ed = editorRef.current
+              if (ed && !ed.isDestroyed) {
+                const { from, to } = ed.state.selection
+                savedImageInsertRangeRef.current = { from, to }
+              }
+            }}
             onClick={() => {
               setImageUploadError(null)
               fileInputRef.current?.click()
