@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { TiptapEditor } from '@/components/editor/TiptapEditor'
+import { clearPendingEntryIdFromSession } from '@/lib/journal/pending-entry'
 
 const TITLE_DEBOUNCE_MS = 2000
 
@@ -25,6 +26,11 @@ export function EntryEditForm({ entryId, initialTitle, initialBody }: EntryEditF
 
   const entryIdRef = useRef(entryId)
   entryIdRef.current = entryId
+
+  /** `/entries/new` stores this to avoid double-POST on refresh; clear once edit loads so “New entry” can create again. */
+  useEffect(() => {
+    clearPendingEntryIdFromSession()
+  }, [])
 
   useEffect(() => {
     setTitle(initialTitle)

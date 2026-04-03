@@ -3,11 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import {
-  getPendingEntryIdFromSession,
-  setPendingEntryIdInSession,
-} from '@/lib/journal/pending-entry'
-import { isUuid } from '@/lib/utils/uuid'
+import { fetchOrReuseNewEntryId } from '@/lib/journal/create-new-entry-client'
 
 export default function NewEntryPage() {
   const router = useRouter()
@@ -16,43 +12,17 @@ export default function NewEntryPage() {
   useEffect(() => {
     let cancelled = false
 
-    async function run() {
-      try {
-        const existing = getPendingEntryIdFromSession()
-        if (existing && isUuid(existing)) {
-          router.replace(`/entries/${existing}/edit`)
-          return
-        }
-
-        const res = await fetch('/api/entries', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({}),
-        })
-
-        if (!res.ok) {
-          const body = (await res.json().catch(() => null)) as { error?: string } | null
-          throw new Error(body?.error ?? `Request failed (${res.status})`)
-        }
-
-        const data = (await res.json()) as { id?: unknown }
-        const id = data.id
-        if (typeof id !== 'string' || !isUuid(id)) {
-          throw new Error('Invalid response from server')
-        }
-
+    void fetchOrReuseNewEntryId()
+      .then((id) => {
         if (cancelled) return
-
-        setPendingEntryIdInSession(id)
         router.replace(`/entries/${id}/edit`)
-      } catch (e) {
+      })
+      .catch((e) => {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : 'Something went wrong')
         }
-      }
-    }
+      })
 
-    void run()
     return () => {
       cancelled = true
     }
