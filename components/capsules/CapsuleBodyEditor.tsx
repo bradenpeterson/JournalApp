@@ -4,7 +4,11 @@ import type { JSONContent } from '@tiptap/core'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { useEffect, useRef } from 'react'
 
-import { CAPSULE_EDITOR_CLASS, CAPSULE_EDITOR_EXTENSIONS } from '@/components/capsules/capsule-editor-shared'
+import {
+  CAPSULE_EDITOR_CLASS,
+  CAPSULE_EDITOR_EXTENSIONS,
+  CAPSULE_EDITOR_SURFACE,
+} from '@/components/capsules/capsule-editor-shared'
 
 const EMPTY_DOC: JSONContent = { type: 'doc', content: [] }
 
@@ -42,13 +46,11 @@ export function CapsuleBodyEditor({ onDocChange }: CapsuleBodyEditorProps) {
   }, [editor])
 
   if (!editor) {
-    return (
-      <div className="min-h-[240px] rounded-md border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950" />
-    )
+    return <div className={`min-h-[min(16rem,40vh)] ${CAPSULE_EDITOR_SURFACE}`} />
   }
 
   return (
-    <div className="rounded-md border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
+    <div className={CAPSULE_EDITOR_SURFACE}>
       <EditorContent editor={editor} />
     </div>
   )

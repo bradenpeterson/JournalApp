@@ -9,26 +9,21 @@ const LABELS: Record<ThemePreference, string> = {
   dark: 'Dark',
 }
 
+const fieldsetDefault =
+  'inline-flex rounded-xl border border-sanctuary-border bg-sanctuary-sidebar/60 p-1 dark:border-zinc-700 dark:bg-zinc-900/80'
+
+const skeletonDefault =
+  'inline-flex h-9 min-w-[200px] rounded-xl border border-sanctuary-border bg-sanctuary-sidebar/80 dark:border-zinc-700 dark:bg-zinc-900'
+
 export function ThemeSegmentedControl({ className }: { className?: string }) {
   const { preference, setPreference, ready } = useThemePreference()
 
   if (!ready) {
-    return (
-      <div
-        className={
-          className
-            ? className
-            : 'inline-flex h-9 min-w-[200px] rounded-md border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900'
-        }
-        aria-hidden
-      />
-    )
+    return <div className={className ?? skeletonDefault} aria-hidden />
   }
 
   return (
-    <fieldset
-      className={className ?? 'inline-flex rounded-md border border-neutral-200 p-0.5 dark:border-neutral-700'}
-    >
+    <fieldset className={className ?? fieldsetDefault}>
       <legend className="sr-only">Color theme</legend>
       <div className="flex gap-0.5">
         {THEME_VALUES.map((value) => {
@@ -41,8 +36,8 @@ export function ThemeSegmentedControl({ className }: { className?: string }) {
               onClick={() => setPreference(value)}
               className={
                 selected
-                  ? 'rounded bg-white px-2.5 py-1.5 text-xs font-medium text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-neutral-100'
-                  : 'rounded px-2.5 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
+                  ? 'rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-sanctuary-text shadow-sm dark:bg-zinc-800 dark:text-zinc-100'
+                  : 'rounded-lg px-3 py-1.5 text-xs font-medium text-sanctuary-muted transition-colors hover:text-sanctuary-text dark:text-zinc-500 dark:hover:text-zinc-200'
               }
             >
               {LABELS[value]}

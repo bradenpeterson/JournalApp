@@ -7,7 +7,7 @@ import Typography from '@tiptap/extension-typography'
 import StarterKit from '@tiptap/starter-kit'
 import { useEffect, useRef } from 'react'
 
-import { CAPSULE_EDITOR_CLASS } from '@/components/capsules/capsule-editor-shared'
+import { CAPSULE_EDITOR_CLASS, CAPSULE_EDITOR_SURFACE } from '@/components/capsules/capsule-editor-shared'
 
 const EMPTY_DOC: JSONContent = { type: 'doc', content: [] }
 
@@ -50,13 +50,11 @@ export function CapsuleReadOnlyBody({ doc }: { doc: unknown }) {
   }, [editor, doc])
 
   if (!editor) {
-    return (
-      <div className="min-h-[120px] rounded-md border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900/40" />
-    )
+    return <div className={`min-h-[8rem] ${CAPSULE_EDITOR_SURFACE}`} />
   }
 
   return (
-    <div className="rounded-md border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
+    <div className={CAPSULE_EDITOR_SURFACE}>
       <EditorContent editor={editor} />
     </div>
   )

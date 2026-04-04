@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 
+import { AppShell } from '@/components/shell/AppShell'
+
 export default function AppGroupLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>
+  return <AppShell>{children}</AppShell>
 }

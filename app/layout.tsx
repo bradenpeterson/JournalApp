@@ -1,17 +1,23 @@
 import type { Metadata } from 'next'
-import { ClerkProvider, Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
-import { Geist, Geist_Mono } from 'next/font/google'
-import Link from 'next/link'
+import { ClerkProvider } from '@clerk/nextjs'
+import { Geist_Mono, Manrope, Newsreader } from 'next/font/google'
 
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
-import { ThemeSegmentedControl } from '@/components/theme/ThemeSegmentedControl'
 import { THEME_INLINE_SCRIPT } from '@/lib/theme/inline-script'
 
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const manrope = Manrope({
+  variable: '--font-manrope',
   subsets: ['latin'],
+  display: 'swap',
+})
+
+const newsreader = Newsreader({
+  variable: '--font-newsreader',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  display: 'swap',
 })
 
 const geistMono = Geist_Mono({
@@ -34,43 +40,9 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INLINE_SCRIPT }} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${manrope.variable} ${newsreader.variable} ${geistMono.variable} font-sans antialiased`}>
         <ClerkProvider>
-          <ThemeProvider>
-            <header className="flex h-16 flex-wrap items-center gap-3 p-4 sm:gap-4">
-              <Show when="signed-in">
-                <nav className="mr-auto flex flex-wrap items-center gap-4 text-sm font-medium text-neutral-700 dark:text-neutral-300 sm:gap-5">
-                  <Link href="/dashboard" className="hover:text-violet-600 dark:hover:text-violet-400">
-                    Dashboard
-                  </Link>
-                  <Link href="/entries" className="hover:text-violet-600 dark:hover:text-violet-400">
-                    Entries
-                  </Link>
-                  <Link href="/capsules" className="hover:text-violet-600 dark:hover:text-violet-400">
-                    Capsules
-                  </Link>
-                  <Link href="/settings" className="hover:text-violet-600 dark:hover:text-violet-400">
-                    Settings
-                  </Link>
-                </nav>
-              </Show>
-              <div className="ml-auto flex flex-wrap items-center gap-3 sm:gap-4">
-                <ThemeSegmentedControl />
-                <Show when="signed-out">
-                  <SignInButton />
-                  <SignUpButton>
-                    <button className="h-10 cursor-pointer rounded-full bg-[#6c47ff] px-4 text-sm font-medium text-white sm:h-12 sm:px-5 sm:text-base">
-                      Sign Up
-                    </button>
-                  </SignUpButton>
-                </Show>
-                <Show when="signed-in">
-                  <UserButton />
-                </Show>
-              </div>
-            </header>
-            {children}
-          </ThemeProvider>
+          <ThemeProvider>{children}</ThemeProvider>
         </ClerkProvider>
       </body>
     </html>

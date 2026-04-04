@@ -357,7 +357,7 @@ A full step-by-step build plan for the personal journaling app. Work through eac
 
 ### 7.1 Design Tokens & Global Styles
 - [ ] Apply the full Tailwind color palette from the mockups (`primary: #0b6a6a`, surface tokens, etc.) to `tailwind.config.ts`
-- [ ] Add Newsreader and Manrope font imports to the root layout
+- [ ] Add Newsreader and  Manrope font imports to the root layout
 - [ ] Set up global CSS for Material Symbols icon font variation settings
 
 ### 7.2 Shared Component Library

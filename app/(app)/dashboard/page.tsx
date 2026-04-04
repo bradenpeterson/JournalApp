@@ -10,10 +10,10 @@ async function DashboardWithStats() {
 
 export default function DashboardPage() {
   return (
-    <main className="mx-auto max-w-4xl p-6">
+    <div className="mx-auto max-w-4xl p-6">
       <Suspense fallback={<DashboardHome />}>
         <DashboardWithStats />
       </Suspense>
-    </main>
+    </div>
   )
 }

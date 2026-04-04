@@ -37,8 +37,8 @@ export default async function EditEntryPage({
   }
 
   return (
-    <main>
+    <div>
       <EntryEditForm key={data.id} entryId={data.id} initialTitle={data.title} initialBody={data.body} />
-    </main>
+    </div>
   )
 }

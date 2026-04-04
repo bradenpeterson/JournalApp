@@ -33,14 +33,26 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, "Times New Roman", serif;
   --font-mono: var(--font-geist-mono);
+  /* Sanctuary / Phase 7 palette (Figma Make — Improve journal app design) */
+  --color-sanctuary-canvas: #f8fafb;
+  --color-sanctuary-sidebar: #eaeff0;
+  --color-sanctuary-primary: #0b6a6a;
+  --color-sanctuary-primary-hover: #0a5858;
+  --color-sanctuary-text: #2c3436;
+  --color-sanctuary-muted: #596063;
+  --color-sanctuary-border: rgb(172 179 182 / 0.1);
+  --color-sanctuary-surface: #ffffff;
+  --color-sanctuary-tint-blue: #d1e4fb;
+  --color-sanctuary-tint-teal: #a2f0f0;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* Tiptap placeholder (extension adds data-placeholder on the first empty block) */

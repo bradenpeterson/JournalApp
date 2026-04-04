@@ -6,16 +6,16 @@ export default async function CapsuleDetailPage({ params }: { params: Promise<{ 
   const { id } = await params
 
   return (
-    <main className="mx-auto max-w-2xl p-6">
+    <div className="mx-auto w-full max-w-[1280px] px-6 py-6 sm:px-10 lg:px-12">
       <Link
         href="/capsules"
-        className="text-sm text-violet-600 underline-offset-2 hover:underline dark:text-violet-400"
+        className="text-sm text-sanctuary-primary underline-offset-2 hover:underline dark:text-teal-300"
       >
         ← Back to capsules
       </Link>
-      <div className="mt-6">
+      <div className="mt-8">
         <CapsuleDetail capsuleId={id} />
       </div>
-    </main>
+    </div>
   )
 }

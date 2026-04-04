@@ -6,7 +6,15 @@ import Typography from '@tiptap/extension-typography'
 import type { Editor, JSONContent } from '@tiptap/core'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import {
   createEntryImagePendingDeleteSync,
@@ -49,15 +57,27 @@ function buildPatchPayload(editor: Editor) {
   return { body, body_text, word_count }
 }
 
+export type SaveState = 'idle' | 'saving' | 'saved' | 'error'
+
+export type TiptapEditorHandle = {
+  /** Flush debounced edits and PATCH the entry immediately. */
+  saveNow: () => Promise<void>
+}
+
 export type TiptapEditorProps = {
   entryId: string
   /** Tiptap / ProseMirror JSON document; omit or null for an empty doc until loaded. */
   initialDoc?: unknown | null
+  /** Sanctuary journal composer: larger type, bottom toolbar, left accent on focus. */
+  skin?: 'default' | 'journal'
+  onSaveStateChange?: (state: SaveState) => void
+  onWordCountChange?: (wordCount: number) => void
 }
 
-type SaveState = 'idle' | 'saving' | 'saved' | 'error'
-
-export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
+export const TiptapEditor = forwardRef<TiptapEditorHandle, TiptapEditorProps>(function TiptapEditor(
+  { entryId, initialDoc, skin = 'default', onSaveStateChange, onWordCountChange },
+  ref,
+) {
   const [saveState, setSaveState] = useState<SaveState>('idle')
   const [imageUploadBusy, setImageUploadBusy] = useState(false)
   const [imageUploadError, setImageUploadError] = useState<string | null>(null)
@@ -67,6 +87,12 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
 
   const entryIdRef = useRef(entryId)
   entryIdRef.current = entryId
+
+  const onWordCountChangeRef = useRef(onWordCountChange)
+  onWordCountChangeRef.current = onWordCountChange
+
+  const onSaveStateChangeRef = useRef(onSaveStateChange)
+  onSaveStateChangeRef.current = onSaveStateChange
 
   const editorRef = useRef<Editor | null>(null)
   /** Latest body snapshot per entry so unmount flush targets the correct id when `entryId` changes. */
@@ -155,6 +181,16 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
   const performSaveRef = useRef(performSave)
   performSaveRef.current = performSave
 
+  const saveNow = useCallback(async () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+      debounceTimerRef.current = null
+    }
+    await performSave()
+  }, [performSave])
+
+  useImperativeHandle(ref, () => ({ saveNow }), [saveNow])
+
   const onImageFileSelected = useCallback(
     async (file: File) => {
       const ed = editorRef.current
@@ -225,6 +261,13 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
     [],
   )
 
+  const placeholderText = skin === 'journal' ? 'Begin your journey here…' : 'Write something…'
+
+  const editorBodyClass =
+    skin === 'journal'
+      ? 'max-w-none min-h-[min(28rem,55vh)] px-5 py-4 font-serif text-xl leading-relaxed text-sanctuary-text focus:outline-none dark:text-zinc-100 [&_h1]:font-serif [&_h1]:text-3xl [&_h1]:font-normal [&_h1]:italic [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:italic [&_h3]:font-serif [&_h3]:text-xl [&_h3]:italic [&_p]:my-3 [&_ul]:my-3 [&_ol]:my-3 [&_li]:my-1 [&_img]:max-w-full [&_img]:rounded-lg [&_img]:border [&_img]:border-sanctuary-border dark:[&_img]:border-zinc-700'
+      : 'max-w-none min-h-[240px] px-3 py-2 text-[15px] leading-relaxed focus:outline-none [&_h1]:text-2xl [&_h1]:font-semibold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-semibold [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_img]:max-w-full [&_img]:rounded-md [&_img]:border [&_img]:border-neutral-200 dark:[&_img]:border-neutral-700'
+
   const editor = useEditor(
     {
       extensions: [
@@ -232,7 +275,7 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
           heading: { levels: [1, 2, 3] },
         }),
         Placeholder.configure({
-          placeholder: 'Write something…',
+          placeholder: placeholderText,
         }),
         CharacterCount,
         Typography,
@@ -243,21 +286,22 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
       immediatelyRender: false,
       editorProps: {
         attributes: {
-          class:
-            'max-w-none min-h-[240px] px-3 py-2 text-[15px] leading-relaxed focus:outline-none [&_h1]:text-2xl [&_h1]:font-semibold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-semibold [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_img]:max-w-full [&_img]:rounded-md [&_img]:border [&_img]:border-neutral-200 dark:[&_img]:border-neutral-700',
+          class: editorBodyClass,
         },
       },
       onCreate: ({ editor: ed }) => {
         editorRef.current = ed
         lastPayloadByEntryIdRef.current.set(entryIdRef.current, buildPatchPayload(ed))
+        onWordCountChangeRef.current?.(wordCountFromPlainText(ed.getText({ blockSeparator: ' ' })))
       },
       onUpdate: ({ editor: ed }) => {
         editorRef.current = ed
         lastPayloadByEntryIdRef.current.set(entryIdRef.current, buildPatchPayload(ed))
+        onWordCountChangeRef.current?.(wordCountFromPlainText(ed.getText({ blockSeparator: ' ' })))
         scheduleDebouncedSave()
       },
     },
-    [entryId, scheduleDebouncedSave, entryImagePendingSyncExtension]
+    [entryId, scheduleDebouncedSave, entryImagePendingSyncExtension, placeholderText, editorBodyClass],
   )
 
   useEffect(() => {
@@ -342,10 +386,76 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
   }, [saveState])
 
   useEffect(() => {
+    onSaveStateChangeRef.current?.(saveState)
+  }, [saveState])
+
+  useEffect(() => {
     if (!imageUploadError) return
     const t = setTimeout(() => setImageUploadError(null), 6000)
     return () => clearTimeout(t)
   }, [imageUploadError])
+
+  const toolbar = (
+    <div
+      className={
+        skin === 'journal'
+          ? 'flex items-center justify-center gap-1 border-t border-sanctuary-border bg-sanctuary-canvas/80 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-950/80'
+          : 'flex items-center gap-1 border-b border-neutral-200 px-2 py-1.5 dark:border-neutral-800'
+      }
+      role="toolbar"
+      aria-label="Editor toolbar"
+    >
+      <button
+        type="button"
+        className={
+          skin === 'journal'
+            ? 'inline-flex h-10 w-10 items-center justify-center rounded-full text-sanctuary-muted transition-colors hover:bg-white/80 disabled:opacity-50 dark:text-zinc-400 dark:hover:bg-zinc-800'
+            : 'inline-flex h-9 w-9 items-center justify-center rounded-md text-neutral-600 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900'
+        }
+        disabled={imageUploadBusy || !editor}
+        aria-busy={imageUploadBusy}
+        aria-label="Insert image"
+        title="Insert image"
+        onMouseDown={(e) => {
+          const ed = editorRef.current
+          if (ed && !ed.isDestroyed) {
+            const { from, to } = ed.state.selection
+            savedImageInsertRangeRef.current = { from, to }
+          }
+          e.preventDefault()
+        }}
+        onFocus={() => {
+          const ed = editorRef.current
+          if (ed && !ed.isDestroyed) {
+            const { from, to } = ed.state.selection
+            savedImageInsertRangeRef.current = { from, to }
+          }
+        }}
+        onClick={() => {
+          setImageUploadError(null)
+          fileInputRef.current?.click()
+        }}
+      >
+        {imageUploadBusy ? (
+          <span
+            className={
+              skin === 'journal'
+                ? 'h-5 w-5 animate-spin rounded-full border-2 border-sanctuary-border border-t-sanctuary-primary dark:border-zinc-600 dark:border-t-teal-400'
+                : 'h-5 w-5 animate-spin rounded-full border-2 border-neutral-300 border-t-violet-600 dark:border-neutral-600 dark:border-t-violet-400'
+            }
+            aria-hidden
+          />
+        ) : (
+          <ImageToolbarIcon />
+        )}
+      </button>
+    </div>
+  )
+
+  const editorShellClass =
+    skin === 'journal'
+      ? 'overflow-hidden rounded-xl border border-sanctuary-border bg-white shadow-[0px_12px_32px_0px_rgba(44,52,54,0.03)] transition-[box-shadow] focus-within:border-l-4 focus-within:border-l-sanctuary-primary focus-within:pl-0 dark:border-zinc-800 dark:bg-zinc-900 dark:focus-within:border-l-teal-400'
+      : 'rounded-md border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950'
 
   return (
     <div className="tiptap-editor flex flex-col gap-2">
@@ -362,61 +472,31 @@ export function TiptapEditor({ entryId, initialDoc }: TiptapEditorProps) {
           if (f) void onImageFileSelected(f)
         }}
       />
-      <div className="rounded-md border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
-        <div
-          className="flex items-center gap-1 border-b border-neutral-200 px-2 py-1.5 dark:border-neutral-800"
-          role="toolbar"
-          aria-label="Editor toolbar"
-        >
-          <button
-            type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-neutral-600 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
-            disabled={imageUploadBusy || !editor}
-            aria-busy={imageUploadBusy}
-            aria-label="Insert image"
-            title="Insert image"
-            onMouseDown={(e) => {
-              const ed = editorRef.current
-              if (ed && !ed.isDestroyed) {
-                const { from, to } = ed.state.selection
-                savedImageInsertRangeRef.current = { from, to }
-              }
-              e.preventDefault()
-            }}
-            onFocus={() => {
-              const ed = editorRef.current
-              if (ed && !ed.isDestroyed) {
-                const { from, to } = ed.state.selection
-                savedImageInsertRangeRef.current = { from, to }
-              }
-            }}
-            onClick={() => {
-              setImageUploadError(null)
-              fileInputRef.current?.click()
-            }}
-          >
-            {imageUploadBusy ? (
-              <span
-                className="h-5 w-5 animate-spin rounded-full border-2 border-neutral-300 border-t-violet-600 dark:border-neutral-600 dark:border-t-violet-400"
-                aria-hidden
-              />
-            ) : (
-              <ImageToolbarIcon />
-            )}
-          </button>
-        </div>
-        <EditorContent editor={editor} className="tiptap-editor-content" />
+      <div className={editorShellClass}>
+        {skin === 'journal' ? (
+          <>
+            <EditorContent editor={editor} className="tiptap-editor-content" />
+            {toolbar}
+          </>
+        ) : (
+          <>
+            {toolbar}
+            <EditorContent editor={editor} className="tiptap-editor-content" />
+          </>
+        )}
       </div>
       {imageUploadError ? (
         <p className="text-sm text-red-600 dark:text-red-400" role="alert">
           {imageUploadError}
         </p>
       ) : null}
-      <p className="min-h-5 text-sm text-neutral-500 dark:text-neutral-400" aria-live="polite">
-        {saveState === 'saving' && 'Saving…'}
-        {saveState === 'saved' && 'Saved'}
-        {saveState === 'error' && 'Could not save. Keep editing to retry.'}
-      </p>
+      {skin === 'default' ? (
+        <p className="min-h-5 text-sm text-neutral-500 dark:text-neutral-400" aria-live="polite">
+          {saveState === 'saving' && 'Saving…'}
+          {saveState === 'saved' && 'Saved'}
+          {saveState === 'error' && 'Could not save. Keep editing to retry.'}
+        </p>
+      ) : null}
     </div>
   )
-}
+})

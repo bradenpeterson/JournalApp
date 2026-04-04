@@ -2,7 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { SETTINGS_SECTION_SHELL } from '@/components/settings/settings-section-shell'
+
 type PdfPhase = 'idle' | 'working' | 'error'
+
+const codeClass =
+  'rounded-md bg-sanctuary-sidebar px-1.5 py-0.5 font-mono text-[0.7rem] text-sanctuary-text dark:bg-zinc-800 dark:text-zinc-200'
 
 export function ExportDownloads() {
   const [pdfPhase, setPdfPhase] = useState<PdfPhase>('idle')
@@ -117,17 +122,17 @@ export function ExportDownloads() {
   }, [pollJob])
 
   return (
-    <section className="mt-8 rounded-xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-950">
-      <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Export journal</h2>
-      <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+    <section className={SETTINGS_SECTION_SHELL}>
+      <h2 className="font-serif text-xl text-sanctuary-text dark:text-zinc-100">Export journal</h2>
+      <p className="mt-2 text-sm leading-relaxed text-sanctuary-muted dark:text-zinc-400">
         JSON downloads immediately with every entry, mood, and image URL. PDF includes the full journal (all entries and
-        images) via a background job — requires <code className="rounded bg-neutral-100 px-1 dark:bg-neutral-800">REDIS_URL</code>{' '}
-        and <code className="rounded bg-neutral-100 px-1 dark:bg-neutral-800">npm run worker</code> (or your hosted worker).
+        images) via a background job — requires <code className={codeClass}>REDIS_URL</code> and{' '}
+        <code className={codeClass}>npm run worker</code> (or your hosted worker).
       </p>
-      <div className="mt-4 flex flex-wrap gap-3">
+      <div className="mt-5 flex flex-wrap gap-3">
         <a
           href="/api/export/json"
-          className="inline-flex items-center justify-center rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700 dark:bg-violet-600 dark:hover:bg-violet-500"
+          className="inline-flex items-center justify-center rounded-full bg-sanctuary-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-sanctuary-primary-hover dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300"
         >
           Download JSON
         </a>
@@ -135,14 +140,14 @@ export function ExportDownloads() {
           type="button"
           disabled={pdfPhase === 'working'}
           onClick={() => void startPdfExport()}
-          className="inline-flex items-center justify-center rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-800 transition hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800"
+          className="inline-flex items-center justify-center rounded-full border border-sanctuary-border bg-white px-6 py-3 text-sm font-medium text-sanctuary-primary transition-colors hover:bg-sanctuary-canvas disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-teal-300 dark:hover:bg-zinc-800"
         >
           {pdfPhase === 'working' ? 'Preparing PDF…' : 'Download PDF'}
         </button>
       </div>
       {pdfMessage ? (
         <p
-          className={`mt-3 text-sm ${pdfPhase === 'error' || pdfLinkFallback ? 'text-red-600 dark:text-red-400' : 'text-neutral-600 dark:text-neutral-300'}`}
+          className={`mt-4 text-sm ${pdfPhase === 'error' || pdfLinkFallback ? 'text-red-600 dark:text-red-400' : 'text-sanctuary-muted dark:text-zinc-400'}`}
           role={pdfPhase === 'error' || pdfLinkFallback ? 'alert' : 'status'}
         >
           {pdfMessage}
@@ -154,7 +159,7 @@ export function ExportDownloads() {
             href={pdfLinkFallback}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-violet-600 underline-offset-2 hover:underline dark:text-violet-400"
+            className="font-medium text-sanctuary-primary underline-offset-2 hover:underline dark:text-teal-300"
           >
             Open PDF
           </a>

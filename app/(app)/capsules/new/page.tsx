@@ -9,6 +9,9 @@ import { useCallback, useState } from 'react'
 import { CapsuleBodyEditor } from '@/components/capsules/CapsuleBodyEditor'
 import { isUuid } from '@/lib/utils/uuid'
 
+const inputClass =
+  'w-full max-w-xl rounded-xl border border-sanctuary-border bg-white px-4 py-3 text-sm text-sanctuary-text shadow-sm outline-none ring-sanctuary-primary/20 placeholder:text-sanctuary-muted/60 focus:border-sanctuary-primary focus:ring-4 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500'
+
 export default function NewCapsulePage() {
   const router = useRouter()
   const [title, setTitle] = useState('')
@@ -70,24 +73,26 @@ export default function NewCapsulePage() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl p-6">
-      <div className="mb-6">
+    <div className="mx-auto w-full max-w-[1280px] px-6 py-6 sm:px-10 lg:px-12">
+      <div className="mb-10">
         <Link
           href="/capsules"
-          className="text-sm text-violet-600 underline-offset-2 hover:underline dark:text-violet-400"
+          className="text-sm text-sanctuary-primary underline-offset-2 hover:underline dark:text-teal-300"
         >
           ← Back to capsules
         </Link>
-        <h1 className="mt-4 text-2xl font-semibold text-neutral-900 dark:text-neutral-100">New time capsule</h1>
-        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-          Content is stored on the server but stays hidden from the list until unlock. You can open this page after
-          unlock to read it.
+        <h1 className="mt-6 font-serif text-4xl italic leading-tight text-sanctuary-text dark:text-zinc-100 sm:text-5xl">
+          New time capsule
+        </h1>
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-sanctuary-muted dark:text-zinc-400">
+          Content is stored on the server but stays hidden from the list until unlock. After the date, open this page to
+          read it.
         </p>
       </div>
 
-      <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-6">
+      <form onSubmit={(e) => void handleSubmit(e)} className="flex max-w-2xl flex-col gap-8">
         <div className="flex flex-col gap-2">
-          <label htmlFor="capsule-title" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+          <label htmlFor="capsule-title" className="text-sm font-medium text-sanctuary-text dark:text-zinc-200">
             Title
           </label>
           <input
@@ -96,12 +101,12 @@ export default function NewCapsulePage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Letter to future me"
-            className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-900 outline-none ring-violet-500/30 focus:border-violet-500 focus:ring-4 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-100"
+            className={inputClass}
           />
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="capsule-unlock" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+          <label htmlFor="capsule-unlock" className="text-sm font-medium text-sanctuary-text dark:text-zinc-200">
             Unlock at
           </label>
           <input
@@ -110,15 +115,15 @@ export default function NewCapsulePage() {
             value={unlockLocal}
             onChange={(e) => setUnlockLocal(e.target.value)}
             required
-            className="max-w-xs rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-900 outline-none ring-violet-500/30 focus:border-violet-500 focus:ring-4 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-100"
+            className={`${inputClass} max-w-xs`}
           />
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="text-xs text-sanctuary-muted dark:text-zinc-500">
             Uses your browser&apos;s local timezone; stored as UTC on the server.
           </p>
         </div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Body</span>
+          <span className="text-sm font-medium text-sanctuary-text dark:text-zinc-200">Body</span>
           <CapsuleBodyEditor onDocChange={onDocChange} />
         </div>
 
@@ -132,18 +137,18 @@ export default function NewCapsulePage() {
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700 disabled:opacity-60 dark:bg-violet-600 dark:hover:bg-violet-500"
+            className="inline-flex items-center justify-center rounded-full bg-sanctuary-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-sanctuary-primary-hover disabled:opacity-60 dark:bg-teal-400 dark:text-zinc-950 dark:hover:bg-teal-300"
           >
             {submitting ? 'Saving…' : 'Seal capsule'}
           </button>
           <Link
             href="/capsules"
-            className="rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-900"
+            className="inline-flex items-center justify-center rounded-full border border-sanctuary-border bg-white px-6 py-3 text-sm font-medium text-sanctuary-primary transition-colors hover:bg-sanctuary-canvas dark:border-zinc-700 dark:bg-zinc-900 dark:text-teal-300 dark:hover:bg-zinc-800"
           >
             Cancel
           </Link>
         </div>
       </form>
-    </main>
+    </div>
   )
 }

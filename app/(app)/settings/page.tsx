@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import { currentUser } from '@clerk/nextjs/server'
 
-import { AccountSummary } from '@/components/settings/AccountSummary'
 import { ExportDownloads } from '@/components/settings/ExportDownloads'
-import { NotificationSettings } from '@/components/settings/NotificationSettings'
-import { ThemeSegmentedControl } from '@/components/theme/ThemeSegmentedControl'
+import { JourneyStatsCard } from '@/components/settings/JourneyStatsCard'
+import { JournalingPreferencesCard } from '@/components/settings/JournalingPreferencesCard'
+import { SettingsGroupLabel } from '@/components/settings/SettingsGroupLabel'
+import { SettingsProfileCard } from '@/components/settings/SettingsProfileCard'
+import { loadDashboardStats } from '@/lib/dashboard/load-dashboard-stats'
 
 export const metadata: Metadata = {
   title: 'Settings',
@@ -21,34 +23,47 @@ function displayNameFromClerk(user: NonNullable<Awaited<ReturnType<typeof curren
 }
 
 export default async function SettingsPage() {
-  const user = await currentUser()
+  const [user, stats] = await Promise.all([currentUser(), loadDashboardStats()])
   const email = user?.primaryEmailAddress?.emailAddress ?? user?.emailAddresses[0]?.emailAddress ?? null
   const displayLine = user ? displayNameFromClerk(user) : null
 
   return (
-    <main className="mx-auto max-w-lg p-6">
-      <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">Settings</h1>
-      <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-        Account, appearance, notifications, and exports.
-      </p>
+    <div className="mx-auto w-full max-w-[1280px] px-6 py-6 sm:px-10 lg:px-12">
+      <header className="mb-10 lg:mb-12">
+        <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-sanctuary-muted dark:text-zinc-500">
+          Profile & workspace
+        </p>
+        <h1 className="font-serif text-4xl italic leading-tight text-sanctuary-text dark:text-zinc-100 sm:text-5xl">
+          Settings
+        </h1>
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-sanctuary-muted dark:text-zinc-400">
+          Your account, journaling preferences, exports, and a snapshot of your journey.
+        </p>
+      </header>
 
-      <div className="mt-8 space-y-0">
-        <AccountSummary email={email} displayLine={displayLine} />
-
-        <section className="mt-8 rounded-xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-950">
-          <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Theme</h2>
-          <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-            Light, dark, or match your system setting. System follows your OS or browser theme and updates when it
-            changes.
-          </p>
-          <div className="mt-4">
-            <ThemeSegmentedControl className="inline-flex rounded-md border border-neutral-200 p-0.5 dark:border-neutral-700" />
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start lg:gap-12">
+        <div className="flex flex-col gap-10 lg:col-span-7">
+          <div>
+            <SettingsGroupLabel>Account</SettingsGroupLabel>
+            <SettingsProfileCard email={email} displayLine={displayLine} />
           </div>
-        </section>
 
-        <NotificationSettings />
-        <ExportDownloads />
+          <div>
+            <SettingsGroupLabel>Preferences</SettingsGroupLabel>
+            <JournalingPreferencesCard />
+          </div>
+
+          <div>
+            <SettingsGroupLabel>Data</SettingsGroupLabel>
+            <ExportDownloads />
+          </div>
+        </div>
+
+        <div className="lg:col-span-5">
+          <SettingsGroupLabel>Journey</SettingsGroupLabel>
+          <JourneyStatsCard stats={stats} />
+        </div>
       </div>
-    </main>
+    </div>
   )
 }

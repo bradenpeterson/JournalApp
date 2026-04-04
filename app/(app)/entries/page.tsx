@@ -2,8 +2,8 @@ import { EntryList } from '@/components/entries/EntryList'
 
 export default function EntriesPage() {
   return (
-    <main className="mx-auto max-w-3xl p-6">
+    <div className="mx-auto w-full max-w-[1280px] px-6 py-6 sm:px-10 lg:px-12">
       <EntryList />
-    </main>
+    </div>
   )
 }

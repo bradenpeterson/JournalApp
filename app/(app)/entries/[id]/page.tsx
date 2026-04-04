@@ -55,7 +55,7 @@ export default async function EntryViewPage({
   const showFallback = !html.trim() && (data.body_text?.trim() ?? '') !== ''
 
   return (
-    <main className="mx-auto max-w-3xl p-6">
+    <div className="mx-auto max-w-3xl p-6">
       <div className="mb-6">
         <Link
           href="/entries"
@@ -90,6 +90,6 @@ export default async function EntryViewPage({
           <p className="whitespace-pre-wrap">{data.body_text ?? ''}</p>
         ) : null}
       </article>
-    </main>
+    </div>
   )
 }

@@ -1,4 +1,4 @@
-/** sessionStorage key: last draft created from `/entries/new` (avoids duplicate blank rows on refresh). */
+/** sessionStorage key: last draft created from `/journal` (or legacy `/entries/new` redirect; avoids duplicate blank rows on refresh). */
 export const PENDING_ENTRY_SESSION_KEY = 'journal:pendingEntryId'
 
 export function getPendingEntryIdFromSession(): string | null {

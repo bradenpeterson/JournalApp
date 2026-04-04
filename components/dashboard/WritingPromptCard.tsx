@@ -6,7 +6,23 @@ import { useEffect, useState } from 'react'
 import { useSupabaseClient } from '@/lib/db/supabase-client'
 import { DEFAULT_WRITING_PROMPT } from '@/lib/journal/default-writing-prompt'
 
-export function WritingPromptCard() {
+type WritingPromptCardProps = {
+  /** When set, replaces the default section classes (Sanctuary dashboard passes its own shell). */
+  className?: string
+  headingText?: string
+  headingClassName?: string
+  bodyClassName?: string
+  /** Hide the h2 (parent supplies the section title). */
+  hideHeading?: boolean
+}
+
+export function WritingPromptCard({
+  className,
+  headingText = "Today's prompt",
+  headingClassName,
+  bodyClassName,
+  hideHeading = false,
+}: WritingPromptCardProps = {}) {
   const { isLoaded, session } = useSession()
   const supabase = useSupabaseClient()
   const [prompt, setPrompt] = useState<string | null>(null)
@@ -57,14 +73,17 @@ export function WritingPromptCard() {
 
   const display = prompt ?? DEFAULT_WRITING_PROMPT
 
+  const sectionClass =
+    className?.trim() ??
+    'rounded-xl border border-neutral-200 bg-gradient-to-b from-violet-50/80 to-white p-5 dark:border-neutral-800 dark:from-violet-950/30 dark:to-neutral-950'
+
+  const headingClass =
+    headingClassName?.trim() ??
+    'text-sm font-semibold uppercase tracking-wide text-violet-800 dark:text-violet-300'
+
   return (
-    <section
-      aria-label="Writing prompt"
-      className="rounded-xl border border-neutral-200 bg-gradient-to-b from-violet-50/80 to-white p-5 dark:border-neutral-800 dark:from-violet-950/30 dark:to-neutral-950"
-    >
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-violet-800 dark:text-violet-300">
-        Today&apos;s prompt
-      </h2>
+    <section aria-label="Writing prompt" className={sectionClass}>
+      {hideHeading ? null : <h2 className={headingClass}>{headingText}</h2>}
       {loading ? (
         <div className="mt-4 space-y-2">
           <div className="h-4 w-full animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
@@ -72,7 +91,14 @@ export function WritingPromptCard() {
         </div>
       ) : (
         <>
-          <p className="mt-4 text-base leading-relaxed text-neutral-800 dark:text-neutral-100">{display}</p>
+          <p
+            className={
+              bodyClassName?.trim() ??
+              'mt-4 text-base leading-relaxed text-neutral-800 dark:text-neutral-100'
+            }
+          >
+            {display}
+          </p>
         </>
       )}
     </section>
